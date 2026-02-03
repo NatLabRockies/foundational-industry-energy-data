@@ -16,14 +16,14 @@ def _is_polars(obj):
     return isinstance(obj, pl.DataFrame)
 
 
-def _pandas_to_polars(df: pd.DataFrame) -> pl.DataFrame:
+def _pandas_to_polars(df: pd.DataFrame) -> pl.LazyFrame:
     """Convert a pandas DataFrame to a polars DataFrame"""
-    return pl.from_pandas(df.reset_index())
+    return pl.from_pandas(df.reset_index()).lazy()
 
 
-def _polars_to_pandas(df: pl.DataFrame) -> pd.DataFrame:
+def _polars_to_pandas(df: pl.LazyFrame) -> pd.DataFrame:
     """Convert a polars DataFrame to a pandas DataFrame"""
-    out = df.to_pandas()
+    out = df.collect().to_pandas()
     if "index" in out:
         out = out.set_index("index")
     return out
