@@ -13,17 +13,17 @@ def _is_pandas(obj):
 
 def _is_polars(obj):
     """Check if the object is a polars DataFrame"""
-    return isinstance(obj, pl.DataFrame)
+    return isinstance(obj, pl.LazyFrame)
 
 
-def _pandas_to_polars(df: pd.DataFrame) -> pl.DataFrame:
+def _pandas_to_polars(df: pd.DataFrame) -> pl.LazyFrame:
     """Convert a pandas DataFrame to a polars DataFrame"""
-    return pl.from_pandas(df.reset_index())
+    return pl.from_pandas(df.reset_index()).lazy()
 
 
-def _polars_to_pandas(df: pl.DataFrame) -> pd.DataFrame:
+def _polars_to_pandas(df: pl.LazyFrame) -> pd.DataFrame:
     """Convert a polars DataFrame to a pandas DataFrame"""
-    out = df.to_pandas()
+    out = df.collect().to_pandas()
     if "index" in out:
         out = out.set_index("index")
     return out
@@ -40,7 +40,7 @@ def expect_polars(func):
     Example
     -------
     @expect_polars
-    def echo(df: pl.DataFrame) -> pl.DataFrame:
+    def echo(df: pl.LazyFrame) -> pl.LazyFrame:
         return df
 
     echo(pd.DataFrame({"a": [1, 2, 3]}))
