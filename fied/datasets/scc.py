@@ -39,10 +39,14 @@ def fetch_scc():
     )
     module_logger.debug(f"SCC raw dataset ready: {fname}")
 
-    return pl.scan_csv(
+    lf = pl.scan_csv(
         fname,
         dtypes={
             "SCC": pl.String,
             "last edited date": pl.String,
         },
+    )
+
+    return lf.rename(
+        {col: col.replace(" ", "_") for col in lf.collect_schema().names()}
     )
