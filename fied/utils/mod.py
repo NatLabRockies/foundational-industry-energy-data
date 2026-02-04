@@ -13,7 +13,7 @@ def _is_pandas(obj):
 
 def _is_polars(obj):
     """Check if the object is a polars DataFrame"""
-    return isinstance(obj, pl.DataFrame)
+    return isinstance(obj, pl.LazyFrame)
 
 
 def _pandas_to_polars(df: pd.DataFrame) -> pl.LazyFrame:
@@ -40,7 +40,7 @@ def expect_polars(func):
     Example
     -------
     @expect_polars
-    def echo(df: pl.DataFrame) -> pl.DataFrame:
+    def echo(df: pl.LazyFrame) -> pl.LazyFrame:
         return df
 
     echo(pd.DataFrame({"a": [1, 2, 3]}))
