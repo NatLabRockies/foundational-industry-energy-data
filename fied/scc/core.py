@@ -10,8 +10,6 @@ import yaml
 import sys
 from pathlib import Path
 from io import BytesIO
-toolspath = str(Path(__file__).parents[1]/"tools")
-sys.path.append(toolspath)
 from unit_matcher import UnitsFuels
 
 from fied import datasets
@@ -53,7 +51,7 @@ class SCC_ID:
         self._all_fuel_types_path = Path(self._FIEDPATH, "tools/all_fuels.csv")
 
         # YAML that contains fuel types
-        self._all_fuel_types_path = Path(self._FIEDPATH, "tools/fuel_type_standardization.yaml")
+        self._all_fuel_types_path = Path(self._FIEDPATH, "scc/fuel_type_standardization.yaml")
 
 
         # self._all_fuel_types = pd.read_csv(self._all_fuel_types_path)
@@ -77,7 +75,7 @@ class SCC_ID:
 
         """
 
-        all_scc = datasets.fetch_scc()
+        all_scc = datasets.fetch_scc().collect().to_pandas()
 
         all_scc.columns = [c.replace(' ', '_') for c in all_scc.columns]
 

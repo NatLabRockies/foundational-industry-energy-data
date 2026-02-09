@@ -70,13 +70,13 @@ The standardized, Level 1 fuel types are shown below.
         
         # YAML that contains GHGRP-specific unit types, both standard (EPA defined, default unit types)
         # and non-standard (custom unit types that are gleaned from the UNIT_NAME field in GHGRP data)
-        self._ghgrp_unittypes_path = pathlib.Path(__file__).parents[1]/"tools/ghgrp_unit_types.yaml"
+        self._ghgrp_unittypes_path = pathlib.Path(__file__).parents[0]  / "ghgrp_unit_types.yaml"
         
         # YAML that contains scc-specific unit types, as well as their mapping to level 1 and level 2 unit types.
-        self._nei_unittypes_path = pathlib.Path(__file__).parents[1]/"tools/scc_unit_types.yaml"
+        self._nei_unittypes_path = pathlib.Path(__file__).parents[0] / "scc_unit_types.yaml"
 
         # YAML that contains fuel types
-        self._fuel_types_path = pathlib.Path(__file__).parents[1]/"tools/fuel_type_standardization.yaml"
+        self._fuel_types_path = pathlib.Path(__file__).parents[0] / "fuel_type_standardization.yaml"
 
         self._ghgrp_ut_dict = {}
 
