@@ -2,6 +2,8 @@
 from functools import lru_cache
 
 from importlib.resources import files
+import logging
+import re
 import yaml
 
 
@@ -111,3 +113,43 @@ def map_fuel_types(df: pl.LazyFrame, fuel_type_col: str) -> pl.LazyFrame:
             .alias("fuelTypeLv2")
         ])
     )
+
+
+def load_scc_unit_types():
+    """Load the SCC unit types"""
+    yaml_path = files('fied.scc').joinpath('scc_unit_types.yaml')
+    with yaml_path.open('r') as f:
+        return yaml.safe_load(f)
+
+
+def char_nei_units(nei_unit):
+    """Characterizes a unit type with a standardized level 1 name.
+
+    Parameters
+    ----------
+    nei_unit : str
+        Name of unit type taken from SCC or NEI data.
+
+    Returns
+    -------
+    unit_types : list
+        List of standardized level 1 and level 2
+    """
+    unit_type_table = load_scc_unit_types()
+    matched = [re.search(nei_unit, y) for y in unit_type_table.keys()]
+    matched = [x for x in matched if x != None]
+
+    if len(matched) == 1:
+        try:
+            ut1 = unit_type_table[matched[0].group()]['unitTypeLv1']
+            ut2 = unit_type_table[matched[0].group()]['unitTypeLv2']
+
+        except KeyError as e:
+            logging.error(f"Type not in _nei_uts: {e}")
+
+    elif len(matched) > 1:
+        ut1, ut2 = 'Other combustion', matched[0]
+    else:
+        ut1, ut2 = "Other", nei_unit
+
+    return {"unit_type_lv1": ut1, "unit_type_lv2": ut2}
