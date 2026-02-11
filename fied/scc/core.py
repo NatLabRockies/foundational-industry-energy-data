@@ -585,7 +585,7 @@ class SCC_ID:
 
                     data_index.append(r[0])
 
-                    ft1, ft2 = self._unit_methods.match_fuel_type(
+                    ft1, ft2 = match_fuel_type(
                         r[data.columns.to_list().index('scc_level_three') + 1]
                         )
 
@@ -633,7 +633,7 @@ class SCC_ID:
     
                         ut1, ut2 = 'Other combustion', r[data.columns.to_list().index('scc_level_four') + 1].split(': ')[0]
 
-                        ft1, ft2 = self._unit_methods.match_fuel_type(
+                        ft1, ft2 = match_fuel_type(
                             r[data.columns.to_list().index('scc_level_four') + 1].split(': ')[1].split(' Fired')[0])
 
                     else:
@@ -686,7 +686,7 @@ class SCC_ID:
                         if ':' in ft:
                             ft = ft.split(': ')[1]
             
-                        ft1, ft2 = self._unit_methods.match_fuel_type(ft)
+                        ft1, ft2 = match_fuel_type(ft)
                     
                     else:
                         ut1, ut2 = "Other", r[data.columns.to_list().index('scc_level_three') + 1]
@@ -716,13 +716,13 @@ class SCC_ID:
                         if any([z in x for z in ['Distillate', 'Residual', 'Gas',
                                                 'Liquid', 'Propane']]):
 
-                            ft1, ft2 = self._unit_methods.match_fuel_type(x)
+                            ft1, ft2 = match_fuel_type(x)
 
                             ut1, ut2 = self._unit_methods.char_nei_units(y)
 
                         else:
 
-                            ft1, ft2 = self._unit_methods.match_fuel_type(y)
+                            ft1, ft2 = match_fuel_type(y)
                             ut1, ut2 = self._unit_methods.char_nei_units(x)
 
                     unit_type_lv1.append(ut1)
@@ -756,7 +756,7 @@ class SCC_ID:
 
                     if r[data.columns.to_list().index('scc_level_three') + 1] == 'Process Heaters':
 
-                        ft1, ft2 = self._unit_methods.match_fuel_type(
+                        ft1, ft2 = match_fuel_type(
                             r[data.columns.to_list().index('scc_level_four') + 1].split(': ')[0]
                             )
 
@@ -764,7 +764,7 @@ class SCC_ID:
 
                     else:
 
-                        ft1, ft2 = self._unit_methods.match_fuel_type(
+                        ft1, ft2 = match_fuel_type(
                             r[data.columns.to_list().index('tier_3_description') + 1]
                             )
 
@@ -796,7 +796,7 @@ class SCC_ID:
 
                     if r[data.columns.to_list().index('scc_level_two') + 1] == 'In-process Fuel Use':
 
-                        ft1, ft2 = self._unit_methods.match_fuel_type(r[data.columns.to_list().index('scc_level_three') + 1])
+                        ft1, ft2 = match_fuel_type(r[data.columns.to_list().index('scc_level_three') + 1])
 
                         ut1, ut2 = self._unit_methods.char_nei_units(r[data.columns.to_list().index('scc_level_four') + 1])
 
