@@ -501,10 +501,10 @@ class SCC_ID:
         all_scc = self.load_complete_scc()
     
         id_meth = [
-             self.id_external_combustion,
-             self.id_stationary_fuel_combustion,
-             self.id_ice,
-             self.id_chemical_evaporation,
+             id_external_combustion,
+             id_stationary_fuel_combustion,
+             id_ice,
+             id_chemical_evaporation,
              self.id_industrial_processes,
             ]
 
@@ -527,83 +527,6 @@ class SCC_ID:
         #                how='all', inplace=True)
 
         return all_scc
-
-
-    def id_external_combustion(self, all_scc):
-        """
-        Method for identifying relevant unit and fuel types under
-        SCC Level 1 External Combustion (1)
-
-        Parameters
-        ----------
-        all_scc : pandas.DataFrame
-            Complete list of SCCs.
-
-        Returns
-        -------
-        scc_exc : pandas.DataFrame
-            SCC for external combustion (SCC Level 1 == 1) with
-            unit type and fuel type descriptions.
-        """
-        return id_external_combustion(all_scc)
-
-
-    def id_ice(self, all_scc):
-        """
-        Method for identifying relevant unit and fuel types under 
-        SCC Level 1 Internal Combustion Engines (2)
-
-        Parameters
-        ----------
-        all_scc : pandas.DataFrame
-            Complete list of SCCs.
-
-        Returns
-        -------
-        scc_ice : pandas.DataFrame
-            SCC for external combustion (SCC Level 1 == 2) with
-            unit type and fuel type descriptions.
-        """
-        return id_ice(all_scc)
-
-
-    def id_stationary_fuel_combustion(self, all_scc):
-        """
-        Method for identifying relevant unit and fuel types under 
-        SCC Level 1 Stationary Source Fuel Combustion (21; note this is
-        a 10-digit SCC code)
-
-        Parameters
-        ----------
-        all_scc : pandas.DataFrame
-            Complete list of SCCs.
-
-        Returns
-        -------
-        scc_ice : pandas.DataFrame
-            SCC for external combustion (SCC Level 1 == 2) with
-            unit type and fuel type descriptions
-        """
-        return id_stationary_fuel_combustion(all_scc)
-
-
-    def id_chemical_evaporation(self, all_scc):
-        """
-        Method for identifying relevant unit and fuel types under 
-        SCC Level 1 Chemical Evaporation (4)
-
-        Parameters
-        ----------
-        all_scc : pandas.DataFrame
-            Complete list of SCCs.
-
-        Returns
-        -------
-        scc_chee : pandas.DataFrame
-            SCC for Chemical Evaporation (SCC Level 1 == 4) with
-            unit type and fuel type descriptions
-        """
-        return id_chemical_evaporation(all_scc)
 
 
     # TODO: there are still opportunities to refactor this method. 
