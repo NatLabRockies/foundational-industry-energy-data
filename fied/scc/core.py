@@ -173,6 +173,92 @@ def id_stationary_fuel_combustion(all_scc):
     return scc_sta
 
 
+def id_chemical_evaporation(all_scc):
+    """
+    Method for identifying relevant unit and fuel types under
+    SCC Level 1 Chemical Evaporation (4)
+
+    Parameters
+    ----------
+    all_scc : pandas.DataFrame
+        Complete list of SCCs.
+
+    Returns
+    -------
+    scc_chee : pandas.DataFrame
+        SCC for Chemical Evaporation (SCC Level 1 == 4) with
+        unit type and fuel type descriptions
+    """
+
+    scc_chee = all_scc.query(
+        "scc_level_one == 'Chemical Evaporation' & (scc_level_two == 'Printing/Publishing' |\
+        scc_level_two == 'Surface Coating Operations' | scc_level_two == 'Organic Solvent Evaporation')")
+
+    all_types = {
+        'unit_type_lv1': [],
+        'unit_type_lv2': [],
+        'fuel_type_lv1': [],
+        'fuel_type_lv2': []
+        }
+
+    for i, r in scc_chee.iterrows():
+
+        if (('dryer' in r['scc_level_four'].lower()) | \
+             ('drying' in r['scc_level_four'].lower())):
+
+            ut1, ut2 = 'Dryer', r['scc_level_four']
+            ft1, ft2 = None, None
+
+        elif r['scc_level_three'] == 'Coating Oven - General':
+
+            ut1 = 'Oven'
+
+            if ('<' in r['scc_level_four']) | ('>' in r['scc_level_four']):
+
+                ut2 = 'Coating Oven'
+
+            else:
+
+                ut2 = r['scc_level_four']
+
+            ft1, ft2 = None, None
+
+        elif r['scc_level_three'] == 'Coating Oven Heater':
+
+            ut1, ut2 = 'Heater', 'Coating oven heater'
+
+            ft1, ft2 = match_fuel_type(r['scc_level_four'])
+
+        elif (r['scc_level_three'] == 'Fuel Fired Equipment') & \
+            (r['scc_level_two']=='Surface Coating Operations'):
+
+            ut1, ut2 = 'Other', r['scc_level_four'].split(': ')[1]
+            ft1, ft2 = match_fuel_type(r['scc_level_four'].split(': ')[0])
+
+        elif (r['scc_level_three'] == 'Fuel Fired Equipment') & \
+                (r['scc_level_two']=='Organic Solvent Evaporation'):
+
+            ut1, ut2 = 'Other combustion', r['scc_level_four'].split(': ')[0]
+            ft1, ft2 = match_fuel_type(r['scc_level_four'].split(': ')[1])
+
+        else:
+            ut1, ut2 = None, None
+            ft1, ft2 = None, None
+
+        all_types['unit_type_lv1'].append(ut1)
+        all_types['unit_type_lv2'].append(ut2)
+        all_types['fuel_type_lv1'].append(ft1)
+        all_types['fuel_type_lv2'].append(ft2)
+
+    scc_chee = scc_chee.join(
+        pd.DataFrame(all_types, index=scc_chee.index)
+        )
+
+    scc_chee.dropna(subset=[f"unit_type_lv{l}" for l in [1, 2]], inplace=True)
+
+    return scc_chee
+
+
 class SCC_ID:
     """
     Use descriptions of SCC code levels to identify unit type and fuel type 
@@ -497,74 +583,8 @@ class SCC_ID:
             SCC for Chemical Evaporation (SCC Level 1 == 4) with
             unit type and fuel type descriptions
         """
+        return id_chemical_evaporation(all_scc)
 
-        scc_chee = all_scc.query(
-            "scc_level_one == 'Chemical Evaporation' & (scc_level_two == 'Printing/Publishing' |\
-            scc_level_two == 'Surface Coating Operations' | scc_level_two == 'Organic Solvent Evaporation')")
-
-        all_types = {
-            'unit_type_lv1': [],
-            'unit_type_lv2': [],
-            'fuel_type_lv1': [],
-            'fuel_type_lv2': []
-            }
-
-        for i, r in scc_chee.iterrows():
-
-            if (('dryer' in r['scc_level_four'].lower()) | \
-                 ('drying' in r['scc_level_four'].lower())):
-
-                ut1, ut2 = 'Dryer', r['scc_level_four']
-                ft1, ft2 = None, None
-
-            elif r['scc_level_three'] == 'Coating Oven - General':
-            
-                ut1 = 'Oven'
-
-                if ('<' in r['scc_level_four']) | ('>' in r['scc_level_four']):
-                    
-                    ut2 = 'Coating Oven'
-
-                else:
-                    
-                    ut2 = r['scc_level_four']
-
-                ft1, ft2 = None, None
-
-            elif r['scc_level_three'] == 'Coating Oven Heater':
-                
-                ut1, ut2 = 'Heater', 'Coating oven heater'
-
-                ft1, ft2 = self._unit_methods.match_fuel_type(r['scc_level_four'])
-
-            elif (r['scc_level_three'] == 'Fuel Fired Equipment') & \
-                (r['scc_level_two']=='Surface Coating Operations'):
-
-                ut1, ut2 = 'Other', r['scc_level_four'].split(': ')[1]
-                ft1, ft2 = self._unit_methods.match_fuel_type(r['scc_level_four'].split(': ')[0])
-
-            elif (r['scc_level_three'] == 'Fuel Fired Equipment') & \
-                    (r['scc_level_two']=='Organic Solvent Evaporation'):
-
-                ut1, ut2 = 'Other combustion', r['scc_level_four'].split(': ')[0]
-                ft1, ft2 = self._unit_methods.match_fuel_type(r['scc_level_four'].split(': ')[1])
-    
-            else:
-                ut1, ut2 = None, None
-                ft1, ft2 = None, None
-
-            all_types['unit_type_lv1'].append(ut1)
-            all_types['unit_type_lv2'].append(ut2)
-            all_types['fuel_type_lv1'].append(ft1)
-            all_types['fuel_type_lv2'].append(ft2)
-
-        scc_chee = scc_chee.join(
-            pd.DataFrame(all_types, index=scc_chee.index)
-            )
-        
-        scc_chee.dropna(subset=[f"unit_type_lv{l}" for l in [1, 2]], inplace=True)
-
-        return scc_chee
 
     # TODO: there are still opportunities to refactor this method. 
     def id_industrial_processes(self, all_scc):
