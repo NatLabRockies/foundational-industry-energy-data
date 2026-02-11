@@ -13,6 +13,99 @@ from io import BytesIO
 from unit_matcher import UnitsFuels
 
 from fied import datasets
+from fied.scc.unit_matcher import UnitsFuels
+from fied.scc.misc import match_fuel_type, char_nei_units, load_scc_fuel_types
+
+
+def id_external_combustion(all_scc):
+    """
+    Method for identifying relevant unit and fuel types under
+    SCC Level 1 External Combustion (1)
+
+    Parameters
+    ----------
+    all_scc : pandas.DataFrame
+        Complete list of SCCs.
+
+    Returns
+    -------
+    scc_exc : pandas.DataFrame
+        SCC for external combustion (SCC Level 1 == 1) with
+        unit type and fuel type descriptions.
+    """
+
+    scc_exc = all_scc.query("scc_level_one=='External Combustion'")
+
+    all_types = {
+        'unit_type_lv1': [],
+        'unit_type_lv2': [],
+        'fuel_type_lv1': [],
+        'fuel_type_lv2': []
+        }
+
+    for i, r in scc_exc.iterrows():
+
+        if r['scc_level_two'] == 'Space Heaters':
+            ut = char_nei_units(r['scc_level_two'])
+            ut1 = ut["unit_type_lv1"]
+            ut2 = ut["unit_type_lv2"]
+
+            if ':' in r['scc_level_four']:
+                ft1, ft2 = match_fuel_type(r['scc_level_four'].split(': ')[0])
+
+            else:
+                ft1, ft2 = match_fuel_type(r['scc_level_four'])
+
+        elif 'Boilers' in r['scc_level_two']:
+
+            ut1 = "Boiler"
+
+            ut_match = re.search(r'(?<=Boiler,\s)[\w\s\W]+|(?<=Coal:\s)[\w\s\W]+', r['scc_level_four'])
+
+            if ut_match:
+
+                if ((':' in ut_match.group()) & ('Boiler, ' in ut_match.group())) | ('Boiler, ' in ut_match.group()):
+
+                    ut2 = ut_match.group().split('Boiler, ')[1]
+
+                elif 'Pulverizd Coal:' in ut_match.group():
+
+                    ut2 = ut_match().split(': ')[1]
+
+                else:
+
+                    ut2 = ut_match.group()
+
+                ft1, ft2 = match_fuel_type(r['scc_level_three'])
+
+            else:
+
+                if r['scc_level_four'] in (load_scc_fuel_types().keys()):
+
+                    ft1, ft2 = match_fuel_type(r['scc_level_four'])
+                    ut2 = 'Boiler'
+
+                elif r['scc_level_four'] == 'All':
+
+                    ft1, ft2 = match_fuel_type(r['scc_level_three'])
+                    ut2 = 'Boiler'
+
+                else:
+                    ft1, ft2 = match_fuel_type(r['scc_level_three'])
+
+                    ut2 = r['scc_level_four']
+
+        all_types['unit_type_lv1'].append(ut1)
+        all_types['unit_type_lv2'].append(ut2)
+        all_types['fuel_type_lv1'].append(ft1)
+        all_types['fuel_type_lv2'].append(ft2)
+
+    scc_exc = scc_exc.join(
+        pd.DataFrame(all_types, index=scc_exc.index)
+        )
+
+    return scc_exc
+
 
 class SCC_ID:
     """
@@ -207,76 +300,8 @@ class SCC_ID:
             SCC for external combustion (SCC Level 1 == 1) with
             unit type and fuel type descriptions.
         """
+        return id_external_combustion(all_scc)
 
-        scc_exc = all_scc.query("scc_level_one=='External Combustion'")
-
-        all_types = {
-            'unit_type_lv1': [],
-            'unit_type_lv2': [],
-            'fuel_type_lv1': [],
-            'fuel_type_lv2': []
-            }
-
-        for i, r in scc_exc.iterrows():
-
-            if r['scc_level_two'] == 'Space Heaters':
-                ut1, ut2 = self._unit_methods.char_nei_units(r['scc_level_two'])
-
-                if ':' in r['scc_level_four']:
-                    ft1, ft2 = self._unit_methods.match_fuel_type(r['scc_level_four'].split(': ')[0])
-
-                else:
-                    ft1, ft2 = self._unit_methods.match_fuel_type(r['scc_level_four'])
-
-            elif 'Boilers' in r['scc_level_two']:
-
-                ut1 = "Boiler"
-
-                ut_match = re.search(r'(?<=Boiler,\s)[\w\s\W]+|(?<=Coal:\s)[\w\s\W]+', r['scc_level_four'])
-
-                if ut_match:
-
-                    if ((':' in ut_match.group()) & ('Boiler, ' in ut_match.group())) | ('Boiler, ' in ut_match.group()):
-    
-                        ut2 = ut_match.group().split('Boiler, ')[1]
-
-                    elif 'Pulverizd Coal:' in ut_match.group():
-
-                        ut2 = ut_match().split(': ')[1]
-
-                    else:
-
-                        ut2 = ut_match.group()
-
-                    ft1, ft2 = self._unit_methods.match_fuel_type(r['scc_level_three'])
-
-                else:
-
-                    if r['scc_level_four'] in (self._all_fuel_types.keys()):
-
-                        ft1, ft2 = self._unit_methods.match_fuel_type(r['scc_level_four'])
-                        ut2 = 'Boiler'
-
-                    elif r['scc_level_four'] == 'All':
-
-                        ft1, ft2 = self._unit_methods.match_fuel_type(r['scc_level_three'])
-                        ut2 = 'Boiler'
-                        
-                    else:
-                        ft1, ft2 = self._unit_methods.match_fuel_type(r['scc_level_three'])
-
-                        ut2 = r['scc_level_four']
-
-            all_types['unit_type_lv1'].append(ut1)
-            all_types['unit_type_lv2'].append(ut2)
-            all_types['fuel_type_lv1'].append(ft1)
-            all_types['fuel_type_lv2'].append(ft2)
-
-        scc_exc = scc_exc.join(
-            pd.DataFrame(all_types, index=scc_exc.index)
-            )
-
-        return scc_exc
 
     def id_ice(self, all_scc):
         """
