@@ -16,6 +16,9 @@ from fied import datasets
 from fied.scc.unit_matcher import UnitsFuels
 from fied.scc.misc import match_fuel_type, char_nei_units, load_scc_fuel_types
 
+# Transition solution
+_unit_methods = UnitsFuels()
+
 
 def id_external_combustion(all_scc):
     """
@@ -352,6 +355,316 @@ def id_ice(all_scc):
     return scc_ice
 
 
+# TODO: there are still opportunities to refactor this method.
+def id_industrial_processes(all_scc):
+    """
+    Method for identifying relevant unit and fuel types under
+    SCC Level 1 Industrial Processes (3)
+
+    Parameters
+    ----------
+    all_scc : pandas.DataFrame
+        Complete list of SCCs.
+
+    Returns
+    -------
+    scc_ind : pandas.DataFrame
+        SCC for Industrial Processes (SCC Level 1 == 3) with
+        unit type and fuel type descriptions
+    """
+
+    scc_ind = all_scc.query("scc_level_one == 'Industrial Processes' & status == 'Active'")
+
+    all_types_cols = [f"{t}_type_lv{l}" for t in ['unit', 'fuel'] for l in [1, 2]]
+
+    types_df = pd.DataFrame(columns=all_types_cols)
+
+    type_queries = {
+        1: "scc_level_two == 'In-process Fuel Use' & sector != 'Industrial Processes - Storage and Transfer'",
+        2: "sector == 'Commercial Cooking'",
+        3: "scc_level_three == 'Ammonia Production'",
+        4: "scc_level_two != 'In-process Fuel Use' & tier_1_description == 'Storage & Transport'",
+        5: "sector == 'Industrial Processes - Petroleum Refineries'",
+        6: "scc_level_three == 'Fuel Fired Equipment'",
+        7: "scc_level_three != 'Fuel Fired Equipment' & tier_1_description != 'Storage & Transport' & (sector == 'Industrial Processes - Pulp & Paper' | sector == 'Industrial Processes - Cement Manuf' | sector ==  'Industrial Processes - Mining')",
+        8: "sector == 'Industrial Processes - Oil & Gas Production' & tier_1_description != 'Storage & Transport'",
+        9: "sector == 'Industrial Processes - Ferrous Metals'",
+        10: "sector == 'Industrial Processes - NEC' & scc_level_three != 'Fuel Fired Equipment' & scc_level_two != 'In-process Fuel Use' & tier_1_description != 'Storage & Transport'",
+        11: "sector == 'Industrial Processes - Chemical Manuf' & scc_level_three != 'Ammonia Production'  & tier_1_description != 'Storage & Transport' & scc_level_three != 'Fuel Fired Equipment'"
+        }
+
+
+    for n, q in type_queries.items():
+
+        data = scc_ind.query(q).copy(deep=True)
+
+        unit_type_lv1 = []
+        unit_type_lv2 = []
+        fuel_type_lv1 = []
+        fuel_type_lv2 = []
+
+        data_index = []
+
+        if n == 1:
+
+            for r in data.itertuples():
+
+                data_index.append(r[0])
+
+                ft1, ft2 = match_fuel_type(
+                    r[data.columns.to_list().index('scc_level_three') + 1]
+                    )
+
+                if 'Kiln' in r[data.columns.to_list().index('scc_level_four') + 1]: # ]r['scc_level_four']:
+                    ut1, ut2 = 'Kiln', r[data.columns.to_list().index('scc_level_four') + 1]
+
+                else:
+                    ut1, ut2 = 'Other combustion', 'Other combustion'
+
+                unit_type_lv1.append(ut1)
+                unit_type_lv2.append(ut2)
+                fuel_type_lv1.append(ft1)
+                fuel_type_lv2.append(ft2)
+
+        if n == 2:
+
+            for r in data.itertuples():
+
+                data_index.append(r[0])
+
+                if 'Commercial Cooking' in r[data.columns.to_list().index('scc_level_three') + 1]:
+
+                    u = r[data.columns.to_list().index('scc_level_three') + 1].split(' - ')[1]
+
+                    if u == 'Total':
+                        ut1, ut2 = 'Other combustion', 'Cooking'
+
+                    else:
+                        ut1, ut2 = 'Other combustion', u
+
+                ft1, ft2, = None, None
+
+                unit_type_lv1.append(ut1)
+                unit_type_lv2.append(ut2)
+                fuel_type_lv1.append(ft1)
+                fuel_type_lv2.append(ft2)
+
+        if n == 3:
+
+            for r in data.itertuples():
+
+                data_index.append(r[0])
+
+                if ':' in r[data.columns.to_list().index('scc_level_four')]:
+
+                    ut1, ut2 = 'Other combustion', r[data.columns.to_list().index('scc_level_four') + 1].split(': ')[0]
+
+                    ft1, ft2 = match_fuel_type(
+                        r[data.columns.to_list().index('scc_level_four') + 1].split(': ')[1].split(' Fired')[0])
+
+                else:
+                    ut1, ut2 = "Other", r[data.columns.to_list().index('scc_level_four') + 1]
+                    ft1, ft2 = None, None
+
+                unit_type_lv1.append(ut1)
+                unit_type_lv2.append(ut2)
+                fuel_type_lv1.append(ft1)
+                fuel_type_lv2.append(ft2)
+
+        if n == 4:
+
+            for r in data.itertuples():
+
+                data_index.append(r[0])
+
+                if re.search(r'(Breathing Loss)', r[data.columns.to_list().index('scc_level_four') + 1]):
+
+                    ut1, ut2 = None, None
+
+                else:
+                    ut1, ut2 = 'Other', r[data.columns.to_list().index('scc_level_four') + 1]
+
+                unit_type_lv1.append(ut1)
+                unit_type_lv2.append(ut2)
+                fuel_type_lv1.append(np.nan)
+                fuel_type_lv2.append(np.nan)
+
+        if n == 5:
+
+            refinery_types = {
+                'Process Heaters': ['Heater', 'Process heater'],
+                'Flares': ['Other combustion', 'Flare'],
+                'Fluid Coking Unit': ['Other combustion', 'Fluid coking unit'],
+                'Petroleum Coke Calcining': ['Other combustion', 'Petroleum coke calcining'],
+                'Incinerators': ['Other combustion', 'Incinerator']
+                }
+
+            for r in data.itertuples():
+
+                data_index.append(r[0])
+
+                if r[data.columns.to_list().index('scc_level_three')] in refinery_types.keys():
+
+                    ut1, ut2 = refinery_types[r[data.columns.to_list().index('scc_level_three') + 1]]
+
+                    ft = r[data.columns.to_list().index('scc_level_four') + 1]
+
+                    if ':' in ft:
+                        ft = ft.split(': ')[1]
+
+                    ft1, ft2 = match_fuel_type(ft)
+
+                else:
+                    ut1, ut2 = "Other", r[data.columns.to_list().index('scc_level_three') + 1]
+
+                    ft1, ft2 = None, None
+
+                unit_type_lv1.append(ut1)
+                unit_type_lv2.append(ut2)
+                fuel_type_lv1.append(ft1)
+                fuel_type_lv2.append(ft2)
+
+        if n == 6:
+
+            for r in data.itertuples():
+
+                data_index.append(r[0])
+
+                try:
+                    x, y = r[data.columns.to_list().index('scc_level_four') + 1].split(': ')
+
+                except ValueError:
+                    ft1, ft2 = 'Other', 'Other'
+                    ut1, ut2 = 'Other combustion', 'Other'
+
+                else:
+
+                    if any([z in x for z in ['Distillate', 'Residual', 'Gas',
+                                            'Liquid', 'Propane']]):
+
+                        ft1, ft2 = match_fuel_type(x)
+
+                        ut = char_nei_units(y)
+                        ut1 = ut["unit_type_lv1"]
+                        ut2 = ut["unit_type_lv2"]
+
+                    else:
+
+                        ft1, ft2 = match_fuel_type(y)
+                        ut = char_nei_units(x)
+                        ut1 = ut["unit_type_lv1"]
+                        ut2 = ut["unit_type_lv2"]
+
+                unit_type_lv1.append(ut1)
+                unit_type_lv2.append(ut2)
+                fuel_type_lv1.append(ft1)
+                fuel_type_lv2.append(ft2)
+
+        if (n == 6) | (n == 7):
+
+            for r in data.itertuples():
+
+                data_index.append(r[0])
+
+                ut = char_nei_units(
+                    r[data.columns.to_list().index('scc_level_four') + 1]
+                    )
+                ut1 = ut["unit_type_lv1"]
+                ut2 = ut["unit_type_lv2"]
+
+                if not ut2:
+                    ut2 = r[data.columns.to_list().index('scc_level_four') + 1]
+
+                unit_type_lv1.append(ut1)
+                unit_type_lv2.append(ut2)
+                fuel_type_lv1.append(None)
+                fuel_type_lv2.append(None)
+
+        if n == 8:
+
+            for r in data.itertuples():
+
+                data_index.append(r[0])
+
+                if r[data.columns.to_list().index('scc_level_three') + 1] == 'Process Heaters':
+
+                    ft1, ft2 = match_fuel_type(
+                        r[data.columns.to_list().index('scc_level_four') + 1].split(': ')[0]
+                        )
+
+                    ut1, ut2 = 'Heater', 'Process heater'
+
+                else:
+
+                    ft1, ft2 = match_fuel_type(
+                        r[data.columns.to_list().index('tier_3_description') + 1]
+                        )
+
+                    # This doesn't seem right
+                    ut1, ut2 = _unit_methods.char_nei_units(
+                        r[data.columns.to_list().index('scc_level_four') + 1]
+                        )
+
+                unit_type_lv1.append(ut1)
+                unit_type_lv2.append(ut2)
+                fuel_type_lv1.append(None)
+                fuel_type_lv2.append(None)
+
+        if n == 9:
+
+            for r in data.itertuples():
+
+                data_index.append(r[0])
+
+                unit_type_lv1.append('Other')
+                unit_type_lv2.append(r[data.columns.to_list().index('scc_level_four') + 1])
+                fuel_type_lv1.append(None)
+                fuel_type_lv2.append(None)
+
+        if n == 10:
+
+            for r in data.itertuples():
+
+                data_index.append(r[0])
+
+                if r[data.columns.to_list().index('scc_level_two') + 1] == 'In-process Fuel Use':
+
+                    ft1, ft2 = match_fuel_type(r[data.columns.to_list().index('scc_level_three') + 1])
+
+                    ut1, ut2 = _unit_methods.char_nei_units(r[data.columns.to_list().index('scc_level_four') + 1])
+
+                else:
+                    ut1, ut2, ft1, ft2 = _unit_methods.char_remaining_nei(r, data)
+
+                unit_type_lv1.append(ut1)
+                unit_type_lv2.append(ut2)
+                fuel_type_lv1.append(ft1)
+                fuel_type_lv2.append(ft2)
+
+        if n == 11:
+
+            for r in data.itertuples():
+
+                data_index.append(r[0])
+
+                ut1, ut2, ft1, ft2 = _unit_methods.char_remaining_nei(r, data)
+
+                unit_type_lv1.append(ut1)
+                unit_type_lv2.append(ut2)
+                fuel_type_lv1.append(ft1)
+                fuel_type_lv2.append(ft2)
+
+        data_types = pd.DataFrame(
+            [[unit_type_lv1, unit_type_lv2, fuel_type_lv1, fuel_type_lv2]],
+            columns=all_types_cols,
+            index=data_index
+            )
+
+        types_df = types_df.append(data_types)
+
+    return types_df
+
+
 class SCC_ID:
     """
     Use descriptions of SCC code levels to identify unit type and fuel type 
@@ -505,7 +818,7 @@ class SCC_ID:
              id_stationary_fuel_combustion,
              id_ice,
              id_chemical_evaporation,
-             self.id_industrial_processes,
+             id_industrial_processes,
             ]
 
         ids = pd.concat(
@@ -528,308 +841,6 @@ class SCC_ID:
 
         return all_scc
 
-
-    # TODO: there are still opportunities to refactor this method. 
-    def id_industrial_processes(self, all_scc):
-        """
-        Method for identifying relevant unit and fuel types under 
-        SCC Level 1 Industrial Processes (3)
-
-        Parameters
-        ----------
-        all_scc : pandas.DataFrame
-            Complete list of SCCs.
-
-        Returns
-        -------
-        scc_ind : pandas.DataFrame
-            SCC for Industrial Processes (SCC Level 1 == 3) with
-            unit type and fuel type descriptions
-        """
-
-        scc_ind = all_scc.query("scc_level_one == 'Industrial Processes' & status == 'Active'")
-
-        all_types_cols = [f"{t}_type_lv{l}" for t in ['unit', 'fuel'] for l in [1, 2]]
-        
-        types_df = pd.DataFrame(columns=all_types_cols)
-    
-        type_queries = {
-            1: "scc_level_two == 'In-process Fuel Use' & sector != 'Industrial Processes - Storage and Transfer'",
-            2: "sector == 'Commercial Cooking'",
-            3: "scc_level_three == 'Ammonia Production'",
-            4: "scc_level_two != 'In-process Fuel Use' & tier_1_description == 'Storage & Transport'",
-            5: "sector == 'Industrial Processes - Petroleum Refineries'",
-            6: "scc_level_three == 'Fuel Fired Equipment'",
-            7: "scc_level_three != 'Fuel Fired Equipment' & tier_1_description != 'Storage & Transport' & (sector == 'Industrial Processes - Pulp & Paper' | sector == 'Industrial Processes - Cement Manuf' | sector ==  'Industrial Processes - Mining')",
-            8: "sector == 'Industrial Processes - Oil & Gas Production' & tier_1_description != 'Storage & Transport'",
-            9: "sector == 'Industrial Processes - Ferrous Metals'",
-            10: "sector == 'Industrial Processes - NEC' & scc_level_three != 'Fuel Fired Equipment' & scc_level_two != 'In-process Fuel Use' & tier_1_description != 'Storage & Transport'",
-            11: "sector == 'Industrial Processes - Chemical Manuf' & scc_level_three != 'Ammonia Production'  & tier_1_description != 'Storage & Transport' & scc_level_three != 'Fuel Fired Equipment'"
-            }
-
-
-        for n, q in type_queries.items():
-
-            data = scc_ind.query(q).copy(deep=True)
-
-            unit_type_lv1 = []
-            unit_type_lv2 = []
-            fuel_type_lv1 = []
-            fuel_type_lv2 = []
-
-            data_index = []
-
-            if n == 1:
-
-                for r in data.itertuples():
-
-                    data_index.append(r[0])
-
-                    ft1, ft2 = match_fuel_type(
-                        r[data.columns.to_list().index('scc_level_three') + 1]
-                        )
-
-                    if 'Kiln' in r[data.columns.to_list().index('scc_level_four') + 1]: # ]r['scc_level_four']:
-                        ut1, ut2 = 'Kiln', r[data.columns.to_list().index('scc_level_four') + 1]
-        
-                    else:
-                        ut1, ut2 = 'Other combustion', 'Other combustion'
-        
-                    unit_type_lv1.append(ut1)
-                    unit_type_lv2.append(ut2)
-                    fuel_type_lv1.append(ft1)
-                    fuel_type_lv2.append(ft2)
-            
-            if n == 2:
-
-                for r in data.itertuples():
-
-                    data_index.append(r[0])
-
-                    if 'Commercial Cooking' in r[data.columns.to_list().index('scc_level_three') + 1]:
-
-                        u = r[data.columns.to_list().index('scc_level_three') + 1].split(' - ')[1]
-
-                        if u == 'Total':
-                            ut1, ut2 = 'Other combustion', 'Cooking'
-
-                        else:
-                            ut1, ut2 = 'Other combustion', u
-
-                    ft1, ft2, = None, None
-
-                    unit_type_lv1.append(ut1)
-                    unit_type_lv2.append(ut2)
-                    fuel_type_lv1.append(ft1)
-                    fuel_type_lv2.append(ft2)
-
-            if n == 3:
-
-                for r in data.itertuples():
-
-                    data_index.append(r[0])
-
-                    if ':' in r[data.columns.to_list().index('scc_level_four')]:
-    
-                        ut1, ut2 = 'Other combustion', r[data.columns.to_list().index('scc_level_four') + 1].split(': ')[0]
-
-                        ft1, ft2 = match_fuel_type(
-                            r[data.columns.to_list().index('scc_level_four') + 1].split(': ')[1].split(' Fired')[0])
-
-                    else:
-                        ut1, ut2 = "Other", r[data.columns.to_list().index('scc_level_four') + 1]
-                        ft1, ft2 = None, None
-
-                    unit_type_lv1.append(ut1)
-                    unit_type_lv2.append(ut2)
-                    fuel_type_lv1.append(ft1)
-                    fuel_type_lv2.append(ft2)
-
-            if n == 4:
-
-                for r in data.itertuples():
-
-                    data_index.append(r[0])
-
-                    if re.search(r'(Breathing Loss)', r[data.columns.to_list().index('scc_level_four') + 1]):
-
-                        ut1, ut2 = None, None
-    
-                    else:
-                        ut1, ut2 = 'Other', r[data.columns.to_list().index('scc_level_four') + 1]
-        
-                    unit_type_lv1.append(ut1)
-                    unit_type_lv2.append(ut2)
-                    fuel_type_lv1.append(np.nan)
-                    fuel_type_lv2.append(np.nan)
-
-            if n == 5:
-    
-                refinery_types = {
-                    'Process Heaters': ['Heater', 'Process heater'], 
-                    'Flares': ['Other combustion', 'Flare'],
-                    'Fluid Coking Unit': ['Other combustion', 'Fluid coking unit'], 
-                    'Petroleum Coke Calcining': ['Other combustion', 'Petroleum coke calcining'],
-                    'Incinerators': ['Other combustion', 'Incinerator']
-                    }
-
-                for r in data.itertuples():
-
-                    data_index.append(r[0])
-
-                    if r[data.columns.to_list().index('scc_level_three')] in refinery_types.keys():
-
-                        ut1, ut2 = refinery_types[r[data.columns.to_list().index('scc_level_three') + 1]]
-
-                        ft = r[data.columns.to_list().index('scc_level_four') + 1]
-
-                        if ':' in ft:
-                            ft = ft.split(': ')[1]
-            
-                        ft1, ft2 = match_fuel_type(ft)
-                    
-                    else:
-                        ut1, ut2 = "Other", r[data.columns.to_list().index('scc_level_three') + 1]
-
-                        ft1, ft2 = None, None
-                    
-                    unit_type_lv1.append(ut1)
-                    unit_type_lv2.append(ut2)
-                    fuel_type_lv1.append(ft1)
-                    fuel_type_lv2.append(ft2)
-
-            if n == 6:
-                    
-                for r in data.itertuples():
-
-                    data_index.append(r[0])
-
-                    try:
-                        x, y = r[data.columns.to_list().index('scc_level_four') + 1].split(': ')
-
-                    except ValueError:
-                        ft1, ft2 = 'Other', 'Other'
-                        ut1, ut2 = 'Other combustion', 'Other'
-
-                    else:
-
-                        if any([z in x for z in ['Distillate', 'Residual', 'Gas',
-                                                'Liquid', 'Propane']]):
-
-                            ft1, ft2 = match_fuel_type(x)
-
-                            ut1, ut2 = self._unit_methods.char_nei_units(y)
-
-                        else:
-
-                            ft1, ft2 = match_fuel_type(y)
-                            ut1, ut2 = self._unit_methods.char_nei_units(x)
-
-                    unit_type_lv1.append(ut1)
-                    unit_type_lv2.append(ut2)
-                    fuel_type_lv1.append(ft1)
-                    fuel_type_lv2.append(ft2)
-    
-            if (n == 6) | (n == 7):
-                    
-                for r in data.itertuples():
-
-                    data_index.append(r[0])
-
-                    ut1, ut2 = self._unit_methods.char_nei_units(
-                        r[data.columns.to_list().index('scc_level_four') + 1]
-                        )
-                    
-                    if not ut2:
-                        ut2 = r[data.columns.to_list().index('scc_level_four') + 1]
-
-                    unit_type_lv1.append(ut1)
-                    unit_type_lv2.append(ut2)
-                    fuel_type_lv1.append(None)
-                    fuel_type_lv2.append(None)
-
-            if n == 8:
-
-                for r in data.itertuples():
-
-                    data_index.append(r[0])
-
-                    if r[data.columns.to_list().index('scc_level_three') + 1] == 'Process Heaters':
-
-                        ft1, ft2 = match_fuel_type(
-                            r[data.columns.to_list().index('scc_level_four') + 1].split(': ')[0]
-                            )
-
-                        ut1, ut2 = 'Heater', 'Process heater'
-
-                    else:
-
-                        ft1, ft2 = match_fuel_type(
-                            r[data.columns.to_list().index('tier_3_description') + 1]
-                            )
-
-                        ut1, ut2 = self._unit_methods.char_nei_units(
-                            r[data.columns.to_list().index('scc_level_four') + 1]
-                            )
-
-                    unit_type_lv1.append(ut1)
-                    unit_type_lv2.append(ut2)
-                    fuel_type_lv1.append(None)
-                    fuel_type_lv2.append(None)
-
-            if n == 9: 
-                
-                for r in data.itertuples():
-
-                    data_index.append(r[0])
-
-                    unit_type_lv1.append('Other')
-                    unit_type_lv2.append(r[data.columns.to_list().index('scc_level_four') + 1])
-                    fuel_type_lv1.append(None)
-                    fuel_type_lv2.append(None)
-
-            if n == 10:
-
-                for r in data.itertuples():
-
-                    data_index.append(r[0])
-
-                    if r[data.columns.to_list().index('scc_level_two') + 1] == 'In-process Fuel Use':
-
-                        ft1, ft2 = match_fuel_type(r[data.columns.to_list().index('scc_level_three') + 1])
-
-                        ut1, ut2 = self._unit_methods.char_nei_units(r[data.columns.to_list().index('scc_level_four') + 1])
-
-                    else:
-                        ut1, ut2, ft1, ft2 = self._unit_methods.char_remaining_nei(r, data)
-
-                    unit_type_lv1.append(ut1)
-                    unit_type_lv2.append(ut2)
-                    fuel_type_lv1.append(ft1)
-                    fuel_type_lv2.append(ft2)
-
-            if n == 11:
-
-                for r in data.itertuples():
-
-                    data_index.append(r[0])
-
-                    ut1, ut2, ft1, ft2 = self._unit_methods.char_remaining_nei(r, data)
-
-                    unit_type_lv1.append(ut1)
-                    unit_type_lv2.append(ut2)
-                    fuel_type_lv1.append(ft1)
-                    fuel_type_lv2.append(ft2)
-    
-            data_types = pd.DataFrame(
-                [[unit_type_lv1, unit_type_lv2, fuel_type_lv1, fuel_type_lv2]],
-                columns=all_types_cols,
-                index=data_index
-                )
-            
-            types_df = types_df.append(data_types)
-
-        return types_df
 
     def main(self):
         id_scc = SCC_ID()
