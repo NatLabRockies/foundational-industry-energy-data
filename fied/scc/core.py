@@ -259,6 +259,99 @@ def id_chemical_evaporation(all_scc):
     return scc_chee
 
 
+def id_ice(all_scc):
+    """
+    Method for identifying relevant unit and fuel types under
+    SCC Level 1 Internal Combustion Engines (2)
+
+    Parameters
+    ----------
+    all_scc : pandas.DataFrame
+        Complete list of SCCs.
+
+    Returns
+    -------
+    scc_ice : pandas.DataFrame
+        SCC for external combustion (SCC Level 1 == 2) with
+        unit type and fuel type descriptions.
+    """
+
+    scc_ice = all_scc.query("scc_level_one=='Internal Combustion Engines'")
+    scc_ice = scc_ice[scc_ice.scc_level_two.isin(
+        ['Electric Generation', 'Industrial', 'Commercial/Institutional',
+         'Engine Testing']
+        )]
+
+    all_types = {
+        'unit_type_lv1': [],
+        'unit_type_lv2': [],
+        'fuel_type_lv1': [],
+        'fuel_type_lv2': []
+        }
+
+    other = ['Geysers/Geothermal', 'Equipment Leaks',
+             'Wastewater, Aggregate',
+             'Wastewater, Points of Generation', 'Flares']
+
+    types = [
+        'Turbine',
+        'Reciprocating',
+        '2-cycle',
+        '4-cycle'
+        # 'Turbine: Cogeneration',
+        # 'Reciprocating: Cogeneration',
+        # 'Refinery Gas: Turbine',
+        # 'Refinery Gas: Reciprocating Engine',
+        # 'Propane: Reciprocating',
+        # 'Butane: Reciprocating',
+        # 'Reciprocating Engine',
+        # 'Reciprocating Engine: Cogeneration'
+        ]
+
+    for i, r in scc_ice.iterrows():
+
+        if r['scc_level_three'] in other:
+
+            ut1, ut2 = None, None
+            ft1, ft2 = None, None
+
+        else:
+
+            ut1 = 'Internal combustion engine'
+
+            if any([t in r['scc_level_four'] for t in types]):
+
+                ft1, ft2 = match_fuel_type(r['scc_level_three'])
+
+                ut2 = r['scc_level_four']
+
+            else:
+
+                if r['scc_level_four'] in load_scc_fuel_types().keys():
+
+                    ft1, ft2 = match_fuel_type(r['scc_level_four'])
+
+                else:
+
+                    ft1, ft2 = match_fuel_type('Jet A Fuel')
+
+                ut2 = r['scc_level_three'.split('Testing')][0]
+
+        all_types['unit_type_lv1'].append(ut1)
+        all_types['unit_type_lv2'].append(ut2)
+        all_types['fuel_type_lv1'].append(ft1)
+        all_types['fuel_type_lv2'].append(ft2)
+
+    scc_ice = scc_ice.join(
+        pd.DataFrame(all_types, index=scc_ice.index)
+        )
+
+    scc_ice.dropna(subset=[f"{t}_type_lv{l}" for t in ['unit', 'fuel'] for l in [1, 2]],
+                   inplace=True)
+
+    return scc_ice
+
+
 class SCC_ID:
     """
     Use descriptions of SCC code levels to identify unit type and fuel type 
@@ -471,81 +564,8 @@ class SCC_ID:
             SCC for external combustion (SCC Level 1 == 2) with
             unit type and fuel type descriptions.
         """
+        return id_ice(all_scc)
 
-        scc_ice = all_scc.query("scc_level_one=='Internal Combustion Engines'")
-        scc_ice = scc_ice[scc_ice.scc_level_two.isin(
-            ['Electric Generation', 'Industrial', 'Commercial/Institutional',
-             'Engine Testing']
-            )]
-
-        all_types = {
-            'unit_type_lv1': [],
-            'unit_type_lv2': [],
-            'fuel_type_lv1': [],
-            'fuel_type_lv2': []
-            }
-
-        other = ['Geysers/Geothermal', 'Equipment Leaks',
-                 'Wastewater, Aggregate',
-                 'Wastewater, Points of Generation', 'Flares']
-
-        types = [
-            'Turbine',
-            'Reciprocating',
-            '2-cycle',
-            '4-cycle'
-            # 'Turbine: Cogeneration',
-            # 'Reciprocating: Cogeneration',
-            # 'Refinery Gas: Turbine',
-            # 'Refinery Gas: Reciprocating Engine',
-            # 'Propane: Reciprocating',
-            # 'Butane: Reciprocating',
-            # 'Reciprocating Engine',
-            # 'Reciprocating Engine: Cogeneration'
-            ]
-
-        for i, r in scc_ice.iterrows():
-
-            if r['scc_level_three'] in other:
-
-                ut1, ut2 = None, None
-                ft1, ft2 = None, None
-
-            else:
-
-                ut1 = 'Internal combustion engine'
-
-                if any([t in r['scc_level_four'] for t in types]):
-
-                    ft1, ft2 = self._unit_methods.match_fuel_type(r['scc_level_three'])
-
-                    ut2 = r['scc_level_four']
-
-                else: 
-    
-                    if r['scc_level_four'] in self._all_fuel_types.keys():
-
-                        ft1, ft2 = self._unit_methods.match_fuel_type(r['scc_level_four'])
-
-                    else:
-
-                        ft1, ft2 = self._unit_methods.match_fuel_type('Jet A Fuel')
-
-                    ut2 = r['scc_level_three'.split('Testing')][0]
-
-            all_types['unit_type_lv1'].append(ut1)
-            all_types['unit_type_lv2'].append(ut2)
-            all_types['fuel_type_lv1'].append(ft1)
-            all_types['fuel_type_lv2'].append(ft2)
-
-        scc_ice = scc_ice.join(
-            pd.DataFrame(all_types, index=scc_ice.index)
-            )
-
-        scc_ice.dropna(subset=[f"{t}_type_lv{l}" for t in ['unit', 'fuel'] for l in [1, 2]],
-                       inplace=True)
-
-        return scc_ice
 
     def id_stationary_fuel_combustion(self, all_scc):
         """
