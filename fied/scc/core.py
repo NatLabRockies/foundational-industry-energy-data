@@ -107,6 +107,72 @@ def id_external_combustion(all_scc):
     return scc_exc
 
 
+def id_stationary_fuel_combustion(all_scc):
+    """
+    Method for identifying relevant unit and fuel types under
+    SCC Level 1 Stationary Source Fuel Combustion (21; note this is
+    a 10-digit SCC code)
+
+    Parameters
+    ----------
+    all_scc : pandas.DataFrame
+        Complete list of SCCs.
+
+    Returns
+    -------
+    scc_ice : pandas.DataFrame
+        SCC for external combustion (SCC Level 1 == 2) with
+        unit type and fuel type descriptions
+    """
+
+    scc_sta = all_scc.query("scc_level_one == 'Stationary Source Fuel Combustion'")
+    scc_sta = scc_sta[~scc_sta.scc_level_two.isin(
+        ['Residential']
+        )]
+
+    all_types = {
+        'unit_type_lv1': [],
+        'unit_type_lv2': [],
+        'fuel_type_lv1': [],
+        'fuel_type_lv2': []
+        }
+
+    for i, r in scc_sta.iterrows():
+
+        ft1, ft2 = match_fuel_type(r['scc_level_three'])
+
+        if 'All Boiler Types' in r['scc_level_four']:
+            ut1, ut2 = 'Boiler', 'Boiler'
+            # unit_types_detail.append('Boiler')
+
+        elif 'Boilers and IC Engines' in r['scc_level_four']:
+            ut1, ut2 = 'Other combustion', 'Boilers and internal combustion engines'
+            # unit_types_detail.append('Boilers and IC Engines')
+
+        elif 'All IC Engine Types' in r['scc_level_four']:
+            ut1, ut2 = 'Internal combustion engine', 'Internal combustion engine'
+            # unit_types_detail.append('IC Engine')
+
+        elif 'All Heater Types' in r['scc_level_four']:
+            ut1, ut2 = 'Heater', 'Heater'
+            # unit_types_detail.append('Heater')
+
+        else:
+
+            ut1, ut2 = 'Other combustion', r['scc_level_four']
+
+        all_types['unit_type_lv1'].append(ut1)
+        all_types['unit_type_lv2'].append(ut2)
+        all_types['fuel_type_lv1'].append(ft1)
+        all_types['fuel_type_lv2'].append(ft2)
+
+    scc_sta = scc_sta.join(
+        pd.DataFrame(all_types, index=scc_sta.index)
+        )
+
+    return scc_sta
+
+
 class SCC_ID:
     """
     Use descriptions of SCC code levels to identify unit type and fuel type 
@@ -412,53 +478,8 @@ class SCC_ID:
             SCC for external combustion (SCC Level 1 == 2) with
             unit type and fuel type descriptions
         """
+        return id_stationary_fuel_combustion(all_scc)
 
-        scc_sta = all_scc.query("scc_level_one == 'Stationary Source Fuel Combustion'")
-        scc_sta = scc_sta[~scc_sta.scc_level_two.isin(
-            ['Residential']
-            )]
-
-        all_types = {
-            'unit_type_lv1': [],
-            'unit_type_lv2': [],
-            'fuel_type_lv1': [],
-            'fuel_type_lv2': []
-            }
-
-        for i, r in scc_sta.iterrows():
-
-            ft1, ft2 = self._unit_methods.match_fuel_type(r['scc_level_three'])
-
-            if 'All Boiler Types' in r['scc_level_four']:
-                ut1, ut2 = 'Boiler', 'Boiler'
-                # unit_types_detail.append('Boiler')
-
-            elif 'Boilers and IC Engines' in r['scc_level_four']:
-                ut1, ut2 = 'Other combustion', 'Boilers and internal combustion engines'
-                # unit_types_detail.append('Boilers and IC Engines')
-
-            elif 'All IC Engine Types' in r['scc_level_four']:
-                ut1, ut2 = 'Internal combustion engine', 'Internal combustion engine'
-                # unit_types_detail.append('IC Engine')
-
-            elif 'All Heater Types' in r['scc_level_four']:
-                ut1, ut2 = 'Heater', 'Heater'
-                # unit_types_detail.append('Heater')
-
-            else:
-                
-                ut1, ut2 = 'Other combustion', r['scc_level_four']
-
-            all_types['unit_type_lv1'].append(ut1)
-            all_types['unit_type_lv2'].append(ut2)
-            all_types['fuel_type_lv1'].append(ft1)
-            all_types['fuel_type_lv2'].append(ft2)
-
-        scc_sta = scc_sta.join(
-            pd.DataFrame(all_types, index=scc_sta.index)
-            )
-
-        return scc_sta
 
     def id_chemical_evaporation(self, all_scc):
         """
