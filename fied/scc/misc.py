@@ -148,7 +148,7 @@ def char_nei_units(nei_unit):
             logging.error(f"Type not in _nei_uts: {e}")
 
     elif len(matched) > 1:
-        ut1, ut2 = 'Other combustion', matched[0]
+        ut1, ut2 = 'Other combustion', matched[0].group()
     else:
         ut1, ut2 = "Other", nei_unit
 
