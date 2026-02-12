@@ -2,6 +2,7 @@
 import os
 
 import pandas as pd
+import polars as pl
 import numpy as np
 import re
 import logging
@@ -14,7 +15,7 @@ from unit_matcher import UnitsFuels
 
 from fied import datasets
 from fied.scc.unit_matcher import UnitsFuels
-from fied.scc.misc import match_fuel_type, char_nei_units, load_scc_fuel_types
+from fied.scc.misc import match_fuel_type, char_nei_units, load_scc_fuel_types, map_fuel_types
 
 # Transition solution
 _unit_methods = UnitsFuels()
@@ -110,70 +111,66 @@ def id_external_combustion(all_scc):
     return scc_exc
 
 
-def id_stationary_fuel_combustion(all_scc):
-    """
-    Method for identifying relevant unit and fuel types under
-    SCC Level 1 Stationary Source Fuel Combustion (21; note this is
-    a 10-digit SCC code)
+def id_stationary_fuel_combustion(all_scc: pl.LazyFrame) -> pl.LazyFrame:
+    """Add 2-tier unit and fuel for SCC Level 1 == 2
+
+    Filter the given SCC for "stationary fuel combustion", i.e. SCC
+    Level 1 equal to 2, and for those, define unit and fuel in a
+    2-tier levels.
 
     Parameters
     ----------
-    all_scc : pandas.DataFrame
+    all_scc : pl.LazyFrame
         Complete list of SCCs.
 
     Returns
     -------
-    scc_ice : pandas.DataFrame
-        SCC for external combustion (SCC Level 1 == 2) with
-        unit type and fuel type descriptions
+    pl.LazyFrame
+        Filtered SCC rows with added columns: ``unit_type_lv1``,
+        ``unit_type_lv2``, ``fuel_type_lv1``, ``fuel_type_lv2``.
     """
+    all_scc = pl.DataFrame(all_scc).lazy()
 
-    scc_sta = all_scc.query("scc_level_one == 'Stationary Source Fuel Combustion'")
-    scc_sta = scc_sta[~scc_sta.scc_level_two.isin(
-        ['Residential']
-        )]
+    lv4 = pl.col("scc_level_four")
 
-    all_types = {
-        'unit_type_lv1': [],
-        'unit_type_lv2': [],
-        'fuel_type_lv1': [],
-        'fuel_type_lv2': []
-        }
-
-    for i, r in scc_sta.iterrows():
-
-        ft1, ft2 = match_fuel_type(r['scc_level_three'])
-
-        if 'All Boiler Types' in r['scc_level_four']:
-            ut1, ut2 = 'Boiler', 'Boiler'
-            # unit_types_detail.append('Boiler')
-
-        elif 'Boilers and IC Engines' in r['scc_level_four']:
-            ut1, ut2 = 'Other combustion', 'Boilers and internal combustion engines'
-            # unit_types_detail.append('Boilers and IC Engines')
-
-        elif 'All IC Engine Types' in r['scc_level_four']:
-            ut1, ut2 = 'Internal combustion engine', 'Internal combustion engine'
-            # unit_types_detail.append('IC Engine')
-
-        elif 'All Heater Types' in r['scc_level_four']:
-            ut1, ut2 = 'Heater', 'Heater'
-            # unit_types_detail.append('Heater')
-
-        else:
-
-            ut1, ut2 = 'Other combustion', r['scc_level_four']
-
-        all_types['unit_type_lv1'].append(ut1)
-        all_types['unit_type_lv2'].append(ut2)
-        all_types['fuel_type_lv1'].append(ft1)
-        all_types['fuel_type_lv2'].append(ft2)
-
-    scc_sta = scc_sta.join(
-        pd.DataFrame(all_types, index=scc_sta.index)
+    return (
+        all_scc
+        .filter(
+            (pl.col("scc_level_one") == "Stationary Source Fuel Combustion")
+            & (pl.col("scc_level_two") != "Residential")
         )
-
-    return scc_sta
+        # ── Unit types: determined by scc_level_four ───────────────
+        .with_columns(
+            pl.when(lv4.str.contains("All Boiler Types"))
+            .then(pl.struct(
+                unit_type_lv1=pl.lit("Boiler"),
+                unit_type_lv2=pl.lit("Boiler"),
+            ))
+            .when(lv4.str.contains("Boilers and IC Engines"))
+            .then(pl.struct(
+                unit_type_lv1=pl.lit("Other combustion"),
+                unit_type_lv2=pl.lit("Boilers and internal combustion engines"),
+            ))
+            .when(lv4.str.contains("All IC Engine Types"))
+            .then(pl.struct(
+                unit_type_lv1=pl.lit("Internal combustion engine"),
+                unit_type_lv2=pl.lit("Internal combustion engine"),
+            ))
+            .when(lv4.str.contains("All Heater Types"))
+            .then(pl.struct(
+                unit_type_lv1=pl.lit("Heater"),
+                unit_type_lv2=pl.lit("Heater"),
+            ))
+            .otherwise(pl.struct(
+                unit_type_lv1=pl.lit("Other combustion"),
+                unit_type_lv2=lv4,
+            ))
+            .alias("_unit_types")
+        )
+        .unnest("_unit_types")
+        # -- Fuel types -----------------------------------
+        .pipe(map_fuel_types, fuel_type_col="scc_level_three")
+    ).collect().to_pandas()
 
 
 def id_chemical_evaporation(all_scc):
