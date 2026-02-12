@@ -335,7 +335,7 @@ def id_ice(all_scc):
 
                     ft1, ft2 = match_fuel_type('Jet A Fuel')
 
-                ut2 = r['scc_level_three'.split('Testing')][0]
+                ut2 = r['scc_level_three'].split('Testing')[0]
 
         all_types['unit_type_lv1'].append(ut1)
         all_types['unit_type_lv2'].append(ut2)
