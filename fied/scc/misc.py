@@ -52,7 +52,7 @@ def match_fuel_type(ft):
 def fuel_type_table() -> pl.LazyFrame:
     """Create a lookup LazyFrame from fuel types dictionary (cached)."""
     lookup_data = []
-    for ft_key, ft_value in load_scc_unit_types().items():
+    for ft_key, ft_value in load_scc_fuel_types().items():
         try:
             lookup_data.append({
                 "fuel_type": ft_key,
