@@ -17,6 +17,8 @@ from fied import datasets
 from fied.scc.unit_matcher import UnitsFuels
 from fied.scc.misc import match_fuel_type, char_nei_units, load_scc_fuel_types, map_fuel_types
 
+from fied.utils import expect_polars, expect_pandas
+
 # Transition solution
 _unit_methods = UnitsFuels()
 
@@ -259,45 +261,8 @@ def id_chemical_evaporation(all_scc):
     return scc_chee
 
 
-def id_ice(all_scc):
-    """
-    Method for identifying relevant unit and fuel types under
-    SCC Level 1 Internal Combustion Engines (2)
-
-    Parameters
-    ----------
-    all_scc : pandas.DataFrame
-        Complete list of SCCs.
-
-    Returns
-    -------
-    scc_ice : pandas.DataFrame
-        SCC for external combustion (SCC Level 1 == 2) with
-        unit type and fuel type descriptions.
-    """
-
-    scc_ice = all_scc.query("scc_level_one=='Internal Combustion Engines'")
-    scc_ice = scc_ice[scc_ice.scc_level_two.isin(
-        ['Electric Generation', 'Industrial', 'Commercial/Institutional',
-         'Engine Testing']
-        )]
-
-    all_types = {
-        'unit_type_lv1': [],
-        'unit_type_lv2': [],
-        'fuel_type_lv1': [],
-        'fuel_type_lv2': []
-        }
-
-    other = ['Geysers/Geothermal', 'Equipment Leaks',
-             'Wastewater, Aggregate',
-             'Wastewater, Points of Generation', 'Flares']
-
-    types = [
-        'Turbine',
-        'Reciprocating',
-        '2-cycle',
-        '4-cycle'
+# Known ICE sub-type keywords in scc_level_four
+_ICE_TYPE_KEYWORDS = ["Turbine", "Reciprocating", "2-cycle", "4-cycle",
         # 'Turbine: Cogeneration',
         # 'Reciprocating: Cogeneration',
         # 'Refinery Gas: Turbine',
@@ -306,50 +271,82 @@ def id_ice(all_scc):
         # 'Butane: Reciprocating',
         # 'Reciprocating Engine',
         # 'Reciprocating Engine: Cogeneration'
-        ]
+                      ]
 
-    for i, r in scc_ice.iterrows():
+# scc_level_three values that are not combustion-related and should be excluded
+_EXCLUDED_LV3 = [
+    "Geysers/Geothermal",
+    "Equipment Leaks",
+    "Wastewater, Aggregate",
+    "Wastewater, Points of Generation",
+    "Flares",
+]
 
-        if r['scc_level_three'] in other:
 
-            ut1, ut2 = None, None
-            ft1, ft2 = None, None
+@expect_polars
+def id_internal_combustion_engine(all_scc: pl.LazyFrame) -> pl.LazyFrame:
+    """Determine unit and fuel types for Internal Combustion Engines
 
-        else:
+    SCC Level 1 => Internal Combustion Engines (2)
 
-            ut1 = 'Internal combustion engine'
+    Parameters
+    ----------
+    all_scc : pl.LazyFrame
+        Complete list of SCCs.
 
-            if any([t in r['scc_level_four'] for t in types]):
+    Returns
+    -------
+    pl.LazyFrame
+        Filtered SCC rows with added columns: ``unit_type_lv1``,
+        ``unit_type_lv2``, ``fuel_type_lv1``, ``fuel_type_lv2``.
+    """
+    # Regex pattern that matches any of the ICE type keywords
+    types_pattern = "|".join(_ICE_TYPE_KEYWORDS)
 
-                ft1, ft2 = match_fuel_type(r['scc_level_three'])
+    # Set of known fuel-type keys for the membership check
+    known_fuel_keys = list(load_scc_fuel_types().keys())
 
-                ut2 = r['scc_level_four']
+    lv3 = pl.col("scc_level_three")
+    lv4 = pl.col("scc_level_four")
 
-            else:
+    # Boolean expressions reused across unit and fuel logic
+    has_type_kw = lv4.str.contains(types_pattern)
+    lv4_is_fuel = lv4.is_in(known_fuel_keys)
 
-                if r['scc_level_four'] in load_scc_fuel_types().keys():
-
-                    ft1, ft2 = match_fuel_type(r['scc_level_four'])
-
-                else:
-
-                    ft1, ft2 = match_fuel_type('Jet A Fuel')
-
-                ut2 = r['scc_level_three'].split('Testing')[0]
-
-        all_types['unit_type_lv1'].append(ut1)
-        all_types['unit_type_lv2'].append(ut2)
-        all_types['fuel_type_lv1'].append(ft1)
-        all_types['fuel_type_lv2'].append(ft2)
-
-    scc_ice = scc_ice.join(
-        pd.DataFrame(all_types, index=scc_ice.index)
+    return (
+        all_scc
+        .filter(
+            (pl.col("scc_level_one") == "Internal Combustion Engines")
+            & pl.col("scc_level_two").is_in(
+                ["Electric Generation", "Industrial",
+                 "Commercial/Institutional", "Engine Testing"]
+            )
+            & ~lv3.is_in(_EXCLUDED_LV3)
         )
-
-    scc_ice.dropna(subset=[f"{t}_type_lv{l}" for t in ['unit', 'fuel'] for l in [1, 2]],
-                   inplace=True)
-
-    return scc_ice
+        # -- Unit types ----
+        .with_columns(
+            pl.lit("Internal combustion engine")
+            .alias("unit_type_lv1")
+        )
+        .with_columns(
+            pl.when(has_type_kw)
+            .then(lv4)
+            .otherwise(
+                lv3.str.split("Testing").list.first()
+            ).alias("unit_type_lv2")
+        )
+        # -- Fuel types: derive a single lookup key, then join ----
+        .with_columns(
+            pl.when(has_type_kw)
+            .then(lv3)
+            .when(lv4_is_fuel)
+            .then(lv4)
+            .otherwise(pl.lit("Jet A Fuel"))
+            .alias("_fuel_key")
+        )
+        .pipe(map_fuel_types, fuel_type_col="_fuel_key")
+        .drop("_fuel_key")
+    ).collect().to_pandas().set_index("index")
 
 
 # TODO: there are still opportunities to refactor this method.
