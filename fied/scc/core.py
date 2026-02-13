@@ -728,6 +728,42 @@ def _branch_commercial_cooking(scc: pl.LazyFrame) -> pl.LazyFrame:
     )
 
 
+def _branch_ammonia(scc: pl.LazyFrame) -> pl.LazyFrame:
+    """Ammonia Production
+
+    When ``scc_level_four`` contains ``': '``, the text before the
+    separator is the unit description and the text after (up to
+    ``' Fired'``) is the fuel-type key.
+    """
+    base = scc.filter(_LV3 == "Ammonia Production")
+
+    has_colon = _LV4.str.contains(": ")
+
+    with_colon = (
+        base
+        .filter(has_colon)
+        .with_columns(
+            pl.lit("Other combustion").alias("unit_type_lv1"),
+            _LV4.str.split(": ").list.first().alias("unit_type_lv2"),
+            _LV4.str.split(": ").list.last().str.split(" Fired").list.first().alias("_fuel_key"),
+        )
+        .pipe(map_fuel_types, fuel_type_col="_fuel_key")
+        #.unnest("_fuel_types")
+        .drop("_fuel_key")
+    )
+
+    without_colon = (
+        base
+        .filter(~has_colon)
+        .with_columns(
+            pl.lit("Other").alias("unit_type_lv1"),
+            _LV4.alias("unit_type_lv2"),
+        )
+        .pipe(_with_null_fuel)
+    )
+
+    return pl.concat([with_colon, without_colon], how="diagonal_relaxed")
+
 
 class SCC_ID:
     """
