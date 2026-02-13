@@ -121,3 +121,64 @@ def _branch_storage_transport(scc_ind: pl.LazyFrame) -> pl.LazyFrame:
         )
         .pipe(_with_null_fuel)
     )
+
+
+def _branch_petroleum_refineries(scc: pl.LazyFrame) -> pl.LazyFrame:
+    """Petroleum Refineries"""
+    refinery_ut = {
+        "Process Heaters": ("Heater", "Process heater"),
+        "Flares": ("Other combustion", "Flare"),
+        "Fluid Coking Unit": ("Other combustion", "Fluid coking unit"),
+        "Petroleum Coke Calcining": ("Other combustion", "Petroleum coke calcining"),
+        "Incinerators": ("Other combustion", "Incinerator"),
+    }
+
+    base = scc.filter(_SECTOR == "Industrial Processes - Petroleum Refineries")
+
+    is_refinery_type = _LV3.is_in(list(refinery_ut.keys()))
+
+    # -- Build a single when/then chain returning a struct ----
+    ut_chain = pl.lit(None, dtype=pl.Struct({
+        "unit_type_lv1": pl.Utf8,
+        "unit_type_lv2": pl.Utf8,
+    }))
+    for lv3_key, (u1, u2) in refinery_ut.items():
+        ut_chain = (
+            pl.when(_LV3 == lv3_key)
+            .then(pl.struct(
+                unit_type_lv1=pl.lit(u1),
+                unit_type_lv2=pl.lit(u2),
+            ))
+            .otherwise(ut_chain)
+        )
+
+    known = (
+        base
+        .filter(is_refinery_type)
+        # -- Unit types ----
+        .with_columns(ut_chain.alias("_unit_types"))
+        .unnest("_unit_types")
+        # -- Fuel types ----
+        .with_columns(
+            pl.when(_LV4.str.contains(": "))
+            .then(_LV4.str.split(": ").list.last())
+            .otherwise(_LV4)
+            .alias("_fuel_key"),
+        )
+        .pipe(map_fuel_types, fuel_type_col="_fuel_key")
+        # .unnest("_fuel_types")
+        .drop("_fuel_key")
+    )
+
+    # -- Unknown refinery types ----
+    unknown = (
+        base
+        .filter(~is_refinery_type)
+        .with_columns(
+            pl.lit("Other").alias("unit_type_lv1"),
+            _LV3.alias("unit_type_lv2"),
+        )
+        .pipe(_with_null_fuel)
+    )
+
+    return pl.concat([known, unknown], how="diagonal_relaxed")
