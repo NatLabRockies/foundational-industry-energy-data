@@ -659,6 +659,31 @@ def id_industrial_processes(all_scc):
     return types_df
 
 
+def _branch_in_process_fuel(scc: pl.LazyFrame) -> pl.LazyFrame:
+    """Ind. Proc. - In-process Fuel Use"""
+    return (
+        scc
+        .filter(
+            (_LV2 == "In-process Fuel Use")
+            & (_SECTOR != "Industrial Processes - Storage and Transfer")
+        )
+        .with_columns(
+            pl.when(_LV4.str.contains("Kiln"))
+            .then(pl.struct(
+                unit_type_lv1=pl.lit("Kiln"),
+                unit_type_lv2=_LV4,
+            ))
+            .otherwise(pl.struct(
+                unit_type_lv1=pl.lit("Other combustion"),
+                unit_type_lv2=pl.lit("Other combustion"),
+            ))
+            .alias("_unit_types")
+        )
+        .unnest("_unit_types")
+        .pipe(map_fuel_types, fuel_type_col="scc_level_three")
+    )
+
+
 class SCC_ID:
     """
     Use descriptions of SCC code levels to identify unit type and fuel type 
