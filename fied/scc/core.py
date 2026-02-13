@@ -684,6 +684,51 @@ def _branch_in_process_fuel(scc: pl.LazyFrame) -> pl.LazyFrame:
     )
 
 
+def _branch_commercial_cooking(scc: pl.LazyFrame) -> pl.LazyFrame:
+    """Determine unit and fuel for Commercial Cooking
+
+    Within sector "Commercial Cooking", there are three variations
+    of SCC-level 3:
+    - Commercial Cooking - Frying
+    - Commercial Cooking - Total
+    - Commercial Cooking - Charbroiling
+
+    The 'Total' variation results in unit level-2 = 'Cooking',
+    otherwise it takes the variation itself, i.e. a
+    'Commercial Cooking - Frying' -> unit level-2 = 'Frying'.
+
+    Notes
+    -----
+    - In case of a record without 'Commercial Cooking' would result
+      in a unit level-2 as `None`.
+    """
+    return (
+        scc
+        .filter(_SECTOR == "Commercial Cooking")
+        .with_columns(
+            pl.when(_LV3.str.contains("Commercial Cooking - Total"))
+            .then(pl.struct(
+                unit_type_lv1=pl.lit("Other combustion"),
+                unit_type_lv2=pl.lit("Cooking"),
+            ))
+            .when(_LV3.str.contains("Commercial Cooking"))
+            .then(pl.struct(
+                unit_type_lv1=pl.lit("Other combustion"),
+                unit_type_lv2=_LV3.str.split(" - ").list.last(),
+            ))
+
+            .otherwise(pl.struct(
+                unit_type_lv1=pl.lit(None, dtype=pl.Utf8),
+                unit_type_lv2=pl.lit(None, dtype=pl.Utf8),
+            ))
+            .alias("_unit_type"),
+        )
+        .unnest("_unit_type")
+        .pipe(_with_null_fuel)
+    )
+
+
+
 class SCC_ID:
     """
     Use descriptions of SCC code levels to identify unit type and fuel type 
