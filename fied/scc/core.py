@@ -765,6 +765,23 @@ def _branch_ammonia(scc: pl.LazyFrame) -> pl.LazyFrame:
     return pl.concat([with_colon, without_colon], how="diagonal_relaxed")
 
 
+def _branch_storage_transport(scc_ind: pl.LazyFrame) -> pl.LazyFrame:
+    """Storage & Transport (non-In-process Fuel Use)"""
+    return (
+        scc_ind
+        .filter(
+            (_LV2 != "In-process Fuel Use")
+            & (_T1DESC == "Storage & Transport")
+        )
+        .filter(~_LV4.str.contains("Breathing Loss"))
+        .with_columns(
+            pl.lit("Other").alias("unit_type_lv1"),
+            _LV4.alias("unit_type_lv2"),
+        )
+        .pipe(_with_null_fuel)
+    )
+
+
 class SCC_ID:
     """
     Use descriptions of SCC code levels to identify unit type and fuel type 
