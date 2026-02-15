@@ -182,3 +182,16 @@ def _branch_petroleum_refineries(scc: pl.LazyFrame) -> pl.LazyFrame:
     )
 
     return pl.concat([known, unknown], how="diagonal_relaxed")
+
+
+def _branch_ferrous_metals(scc: pl.LazyFrame) -> pl.LazyFrame:
+    """Ferrous Metals"""
+    return (
+        scc
+        .filter(_SECTOR == "Industrial Processes - Ferrous Metals")
+        .with_columns(
+            pl.lit("Other").alias("unit_type_lv1"),
+            _LV4.alias("unit_type_lv2"),
+        )
+        .pipe(_with_null_fuel)
+    )
