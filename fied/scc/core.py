@@ -175,90 +175,110 @@ def id_stationary_fuel_combustion(all_scc: pl.LazyFrame) -> pl.LazyFrame:
     ).collect().to_pandas()
 
 
-def id_chemical_evaporation(all_scc):
-    """
-    Method for identifying relevant unit and fuel types under
-    SCC Level 1 Chemical Evaporation (4)
+@expect_polars
+def id_chemical_evaporation(scc: pl.LazyFrame) -> pl.LazyFrame:
+    """Identify relevant unit and fuel types under SCC Level 1
+    Chemical Evaporation (4)
 
     Parameters
     ----------
-    all_scc : pandas.DataFrame
+    scc : pl.LazyFrame
         Complete list of SCCs.
 
     Returns
     -------
-    scc_chee : pandas.DataFrame
-        SCC for Chemical Evaporation (SCC Level 1 == 4) with
-        unit type and fuel type descriptions
+    pl.LazyFrame
+        Filtered SCC rows for Chemical Evaporation (SCC Level 1 == 4)
+        with added columns: ``unit_type_lv1``, ``unit_type_lv2``,
+        ``fuel_type_lv1``, ``fuel_type_lv2``.
     """
 
-    scc_chee = all_scc.query(
-        "scc_level_one == 'Chemical Evaporation' & (scc_level_two == 'Printing/Publishing' |\
-        scc_level_two == 'Surface Coating Operations' | scc_level_two == 'Organic Solvent Evaporation')")
+    _LV2 = pl.col("scc_level_two")
+    _LV3 = pl.col("scc_level_three")
+    _LV4 = pl.col("scc_level_four")
 
-    all_types = {
-        'unit_type_lv1': [],
-        'unit_type_lv2': [],
-        'fuel_type_lv1': [],
-        'fuel_type_lv2': []
-        }
+    # ── Condition expressions (evaluated in priority order) ──────
+    is_dryer = _LV4.str.to_lowercase().str.contains("dryer|drying")
+    is_oven_gen = _LV3 == "Coating Oven - General"
+    has_angle_bracket = _LV4.str.contains(r"[<>]")
+    is_oven_heater = _LV3 == "Coating Oven Heater"
+    is_ffe_surface = (_LV3 == "Fuel Fired Equipment") & (_LV2 == "Surface Coating Operations")
+    is_ffe_organic = (_LV3 == "Fuel Fired Equipment") & (_LV2 == "Organic Solvent Evaporation")
 
-    for i, r in scc_chee.iterrows():
-
-        if (('dryer' in r['scc_level_four'].lower()) | \
-             ('drying' in r['scc_level_four'].lower())):
-
-            ut1, ut2 = 'Dryer', r['scc_level_four']
-            ft1, ft2 = None, None
-
-        elif r['scc_level_three'] == 'Coating Oven - General':
-
-            ut1 = 'Oven'
-
-            if ('<' in r['scc_level_four']) | ('>' in r['scc_level_four']):
-
-                ut2 = 'Coating Oven'
-
-            else:
-
-                ut2 = r['scc_level_four']
-
-            ft1, ft2 = None, None
-
-        elif r['scc_level_three'] == 'Coating Oven Heater':
-
-            ut1, ut2 = 'Heater', 'Coating oven heater'
-
-            ft1, ft2 = match_fuel_type(r['scc_level_four'])
-
-        elif (r['scc_level_three'] == 'Fuel Fired Equipment') & \
-            (r['scc_level_two']=='Surface Coating Operations'):
-
-            ut1, ut2 = 'Other', r['scc_level_four'].split(': ')[1]
-            ft1, ft2 = match_fuel_type(r['scc_level_four'].split(': ')[0])
-
-        elif (r['scc_level_three'] == 'Fuel Fired Equipment') & \
-                (r['scc_level_two']=='Organic Solvent Evaporation'):
-
-            ut1, ut2 = 'Other combustion', r['scc_level_four'].split(': ')[0]
-            ft1, ft2 = match_fuel_type(r['scc_level_four'].split(': ')[1])
-
-        else:
-            ut1, ut2 = None, None
-            ft1, ft2 = None, None
-
-        all_types['unit_type_lv1'].append(ut1)
-        all_types['unit_type_lv2'].append(ut2)
-        all_types['fuel_type_lv1'].append(ft1)
-        all_types['fuel_type_lv2'].append(ft2)
-
-    scc_chee = scc_chee.join(
-        pd.DataFrame(all_types, index=scc_chee.index)
+    return (
+        scc
+        .filter(
+            (pl.col("scc_level_one") == "Chemical Evaporation")
+            & _LV2.is_in([
+                "Printing/Publishing",
+                "Surface Coating Operations",
+                "Organic Solvent Evaporation",
+            ])
         )
-
-    scc_chee.dropna(subset=[f"unit_type_lv{l}" for l in [1, 2]], inplace=True)
-
-    return scc_chee
+        # -- Unit types ----
+        .with_columns(
+            pl.when(is_dryer)
+            .then(pl.struct(
+                unit_type_lv1=pl.lit("Dryer"),
+                unit_type_lv2=_LV4,
+            ))
+            .when(is_oven_gen & has_angle_bracket)
+            .then(pl.struct(
+                unit_type_lv1=pl.lit("Oven"),
+                unit_type_lv2=pl.lit("Coating Oven"),
+            ))
+            .when(is_oven_gen)
+            .then(pl.struct(
+                unit_type_lv1=pl.lit("Oven"),
+                unit_type_lv2=_LV4,
+            ))
+            .when(is_oven_heater)
+            .then(pl.struct(
+                unit_type_lv1=pl.lit("Heater"),
+                unit_type_lv2=pl.lit("Coating oven heater"),
+            ))
+            .when(is_ffe_surface)
+            .then(pl.struct(
+                unit_type_lv1=pl.lit("Other"),
+                unit_type_lv2=_LV4.str.split(": ").list.last(),
+            ))
+            .when(is_ffe_organic)
+            .then(pl.struct(
+                unit_type_lv1=pl.lit("Other combustion"),
+                unit_type_lv2=_LV4.str.split(": ").list.first(),
+            ))
+            .alias("_unit_types"),
+        )
+        .unnest("_unit_types")
+        # -- Fuel types ----
+        .with_columns(
+            pl.when(is_oven_heater)
+            .then(_LV4)
+            .when(is_ffe_surface)
+            .then(_LV4.str.split(": ").list.first())
+            .when(is_ffe_organic)
+            .then(_LV4.str.split(": ").list.last())
+            .otherwise(pl.lit(None, dtype=pl.Utf8))
+            .alias("_fuel_key"),
+        )
+        .pipe(map_fuel_types, fuel_type_col="_fuel_key")
+        # .unnest("_fuel_types")
+        # Null out fuel for rows where no fuel key was derived
+        # Should this logic be in map_fuel_types?
+        .with_columns(
+            pl.when(pl.col("_fuel_key").is_not_null())
+            .then(pl.col("fuel_type_lv1"))
+            .alias("fuel_type_lv1"),
+            pl.when(pl.col("_fuel_key").is_not_null())
+            .then(pl.col("fuel_type_lv2"))
+            .alias("fuel_type_lv2"),
+        )
+        .drop("_fuel_key")
+        .filter(
+            pl.col("unit_type_lv1").is_not_null()
+            | pl.col("unit_type_lv1").is_not_null()
+        )
+    ).collect().to_pandas().set_index("index")
 
 
 # Known ICE sub-type keywords in scc_level_four
