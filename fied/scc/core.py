@@ -131,7 +131,6 @@ def id_stationary_fuel_combustion(all_scc: pl.LazyFrame) -> pl.LazyFrame:
         Filtered SCC rows with added columns: ``unit_type_lv1``,
         ``unit_type_lv2``, ``fuel_type_lv1``, ``fuel_type_lv2``.
     """
-    all_scc = pl.DataFrame(all_scc).lazy()
 
     lv4 = pl.col("scc_level_four")
 
@@ -141,7 +140,7 @@ def id_stationary_fuel_combustion(all_scc: pl.LazyFrame) -> pl.LazyFrame:
             (pl.col("scc_level_one") == "Stationary Source Fuel Combustion")
             & (pl.col("scc_level_two") != "Residential")
         )
-        # ── Unit types: determined by scc_level_four ───────────────
+        # -- Unit types: determined by scc_level_four ----
         .with_columns(
             pl.when(lv4.str.contains("All Boiler Types"))
             .then(pl.struct(
@@ -172,7 +171,7 @@ def id_stationary_fuel_combustion(all_scc: pl.LazyFrame) -> pl.LazyFrame:
         .unnest("_unit_types")
         # -- Fuel types -----------------------------------
         .pipe(map_fuel_types, fuel_type_col="scc_level_three")
-    ).collect().to_pandas()
+    ).collect().to_pandas().set_index("index")
 
 
 @expect_polars
