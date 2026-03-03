@@ -184,7 +184,7 @@ def _branch_petroleum_refineries(scc: pl.LazyFrame) -> pl.LazyFrame:
     return pl.concat([known, unknown], how="diagonal_relaxed")
 
 
-def _branch_ferrous_metals(scc: pl.LazyFrame) -> pl.LazyFrame:
+def _ferrous_metals(scc: pl.LazyFrame) -> pl.LazyFrame:
     """Ferrous Metals"""
     return (
         scc
