@@ -418,24 +418,6 @@ class SCC_ID:
             self._all_fuel_types = yaml.safe_load(file)
 
 
-    def load_complete_scc(self):
-        """
-        Complete list of SCC codes (available from
-        https://sor-scc-api.epa.gov/sccwebservices/sccsearch/) have
-        been manually downloaded.
-
-        Returns
-        -------
-        all_scc : pandas.DataFrame
-
-        """
-
-        all_scc = datasets.fetch_scc().collect().to_pandas()
-
-        all_scc.columns = [c.replace(' ', '_') for c in all_scc.columns]
-
-        return all_scc
-
     @staticmethod
     def scc_query_split(scc):
         """
@@ -515,8 +497,7 @@ class SCC_ID:
             of unit types and fuel types.
         """
 
-        all_scc = self.load_complete_scc()
-    
+        all_scc =  datasets.fetch_scc().collect().to_pandas()
         id_meth = [
              id_external_combustion,
              id_stationary_fuel_combustion,
