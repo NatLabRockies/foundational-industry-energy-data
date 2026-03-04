@@ -630,8 +630,7 @@ class SCC_ID:
 
 
     def main(self):
-        id_scc = SCC_ID()
-        id_scc_df = id_scc.build_id()
+        id_scc_df = self.build_id()
         os.makedirs(self._FIEDPATH / 'scc', exist_ok=True)
         id_scc_df.to_csv(self._FIEDPATH / 'scc' / 'iden_scc.csv')
 
@@ -639,6 +638,3 @@ class SCC_ID:
 if __name__ == '__main__':
 
     id_scc = SCC_ID().main()
-    # all_scc = id_scc.load_complete_scc()
-    # id_scc_df = id_scc.build_id()
-    # id_scc_df.to_csv('./scc/updated_iden_scc.csv')
