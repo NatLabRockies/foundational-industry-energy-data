@@ -123,7 +123,7 @@ def _branch_storage_transport(scc_ind: pl.LazyFrame) -> pl.LazyFrame:
     )
 
 
-def _branch_petroleum_refineries(scc: pl.LazyFrame) -> pl.LazyFrame:
+def _petroleum_refineries(scc: pl.LazyFrame) -> pl.LazyFrame:
     """Petroleum Refineries"""
     refinery_ut = {
         "Process Heaters": ("Heater", "Process heater"),
@@ -142,9 +142,9 @@ def _branch_petroleum_refineries(scc: pl.LazyFrame) -> pl.LazyFrame:
         "unit_type_lv1": pl.Utf8,
         "unit_type_lv2": pl.Utf8,
     }))
-    for lv3_key, (u1, u2) in refinery_ut.items():
+    for refinery_type, (u1, u2) in refinery_ut.items():
         ut_chain = (
-            pl.when(_LV3 == lv3_key)
+            pl.when(_LV3 == refinery_type)
             .then(pl.struct(
                 unit_type_lv1=pl.lit(u1),
                 unit_type_lv2=pl.lit(u2),
