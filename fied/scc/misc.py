@@ -136,7 +136,7 @@ def char_nei_units(nei_unit):
         List of standardized level 1 and level 2
     """
     unit_type_table = load_scc_unit_types()
-    matched = [re.search(nei_unit, y) for y in unit_type_table.keys()]
+    matched = [re.search(re.escape(nei_unit), y) for y in unit_type_table.keys()]
     matched = [x for x in matched if x != None]
 
     if len(matched) == 1:
