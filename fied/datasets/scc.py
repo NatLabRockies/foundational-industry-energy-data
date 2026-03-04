@@ -26,6 +26,9 @@ def fetch_scc():
       }
 
     This is a slow service, thus require a long timeout.
+
+    Complete list of SCC codes (available from
+    https://sor-scc-api.epa.gov/sccwebservices/sccsearch/)
     """
     module_logger.debug("Fetching SCC data")
 
