@@ -47,6 +47,9 @@ def fetch_scc():
         },
     )
 
+    # Drop last column, which is empty (all values are null)
+    lf = lf.drop("")
+
     return lf.rename(
         {col: col.replace(" ", "_") for col in lf.collect_schema().names()}
     )
