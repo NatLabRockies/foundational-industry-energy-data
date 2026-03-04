@@ -24,7 +24,109 @@ from fied.utils import expect_polars, expect_pandas
 _unit_methods = UnitsFuels()
 
 
-def id_external_combustion(all_scc):
+def _classify_space_heater(row: dict) -> dict:
+    lv4 = row["scc_level_four"]
+    ut = char_nei_units(row["scc_level_two"])
+    ft1, ft2 = match_fuel_type(lv4.split(": ")[0] if ":" in lv4 else lv4)
+    return {
+        "unit_type_lv1": ut["unit_type_lv1"],
+        "unit_type_lv2": ut["unit_type_lv2"],
+        "fuel_type_lv1": ft1,
+        "fuel_type_lv2": ft2,
+    }
+
+
+def _classify_boiler(row: dict) -> dict:
+    lv3 = row["scc_level_three"]
+    lv4 = row["scc_level_four"]
+    ut1 = "Boiler"
+    ut_match = re.search(r"(?<=Boiler,\s)[\w\s\W]+|(?<=Coal:\s)[\w\s\W]+", lv4)
+
+    if ut_match:
+        matched = ut_match.group()
+        if "Boiler, " in matched:
+            ut2 = matched.split("Boiler, ")[1]
+        elif "Pulverizd Coal:" in matched:
+            ut2 = matched.split(": ")[1]
+        else:
+            ut2 = matched
+        ft1, ft2 = match_fuel_type(lv3)
+
+    else:
+        fuel_types = load_scc_fuel_types()
+        if lv4 in fuel_types:
+            ft1, ft2 = match_fuel_type(lv4)
+            ut2 = "Boiler"
+        elif lv4 == "All":
+            ft1, ft2 = match_fuel_type(lv3)
+            ut2 = "Boiler"
+        else:
+            ft1, ft2 = match_fuel_type(lv3)
+            ut2 = lv4
+
+    return {
+        "unit_type_lv1": ut1,
+        "unit_type_lv2": ut2,
+        "fuel_type_lv1": ft1,
+        "fuel_type_lv2": ft2,
+    }
+
+
+_EXTERNAL_COMBUSTION_DTYPE = pl.Struct({
+    "unit_type_lv1": pl.String,
+    "unit_type_lv2": pl.String,
+    "fuel_type_lv1": pl.String,
+    "fuel_type_lv2": pl.String,
+})
+
+
+def id_external_combustion(scc: pl.LazyFrame) -> pl.LazyFrame:
+    """
+    Method for identifying relevant unit and fuel types under
+    SCC Level 1 External Combustion (1)
+
+    Temporary solution during transition to polars.
+
+    Parameters
+    ----------
+    scc : pl.LazyFrame
+        Complete list of SCCs.
+
+    Returns
+    -------
+    pl.LazyFrame
+        SCC for external combustion (SCC Level 1 == 1) with
+        unit type and fuel type descriptions.
+    """
+    scc_exc = scc.filter(pl.col("scc_level_one") == "External Combustion")
+
+    space_heaters = (
+        scc_exc
+        .filter(pl.col("scc_level_two") == "Space Heaters")
+        .with_columns(
+            pl.struct("scc_level_two", "scc_level_four")
+            .map_elements(_classify_space_heater, return_dtype=_EXTERNAL_COMBUSTION_DTYPE)
+            .alias("_types")
+        )
+        .unnest("_types")
+    )
+
+    boilers = (
+        scc_exc
+        .filter(pl.col("scc_level_two").str.contains("Boilers"))
+        .with_columns(
+            pl.struct("scc_level_three", "scc_level_four")
+            .map_elements(_classify_boiler, return_dtype=_EXTERNAL_COMBUSTION_DTYPE)
+            .alias("_types")
+        )
+        .unnest("_types")
+    )
+
+    return pl.concat([space_heaters, boilers])
+
+
+@expect_pandas
+def old_id_external_combustion(all_scc):
     """
     Method for identifying relevant unit and fuel types under
     SCC Level 1 External Combustion (1)
