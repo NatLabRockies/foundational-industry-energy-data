@@ -59,7 +59,7 @@ def fetch_QPC(year):
 
     Returns
     -------
-    pl.DataFrame
+    pandas.DataFrame
         Combined quarterly data with columns: NAICS, Description,
         Utilization Rate, UR_Standard Error, Weekly_op_hours,
         Hours_Standard Error, Q, Year.
