@@ -8,10 +8,20 @@ import logging
 import urllib
 
 import pandas as pd
+import polars as pl
 import pooch
 
 
 module_logger = logging.getLogger(__name__)
+
+_OUTPUT_COLUMNS = [
+    "NAICS",
+    "Description",
+    "Utilization Rate",
+    "UR_Standard Error",
+    "Weekly_op_hours",
+    "Hours_Standard Error",
+]
 
 
 def fetch_QPC(year):
@@ -27,7 +37,7 @@ def fetch_QPC(year):
 
     Returns
     -------
-    pd.DataFrame
+    pl.DataFrame
         Combined quarterly data with columns: NAICS, Description,
         Utilization Rate, UR_Standard Error, Weekly_op_hours,
         Hours_Standard Error, Q, Year.
@@ -96,7 +106,7 @@ def fetch_QPC(year):
         # Excel formatting for 2008 is different than all other years.
         # Will need to revise skiprows and usecols.
         try:
-            data = pd.read_excel(
+            raw = pd.read_excel(
                 fname, sheet_name=1, skiprows=4, usecols=range(0, 7), header=0
             )
 
@@ -104,18 +114,19 @@ def fetch_QPC(year):
             module_logger.error(f"Problem with {url}")
             continue
 
-        data = data.drop(data.columns[2], axis=1)
-        data.columns = [
-            "NAICS",
-            "Description",
-            "Utilization Rate",
-            "UR_Standard Error",
-            "Weekly_op_hours",
-            "Hours_Standard Error",
-        ]
-        data = data.dropna()
-        data["Q"] = q
-        data["Year"] = year
+        # Drop positional column (index 2) and convert to polars
+        raw = raw.drop(raw.columns[2], axis=1)
+        raw.columns = _OUTPUT_COLUMNS
+
+        data = (
+            pl.from_pandas(raw)
+            .drop_nulls()
+            .with_columns(
+                pl.lit(q).alias("Q"),
+                pl.lit(year).alias("Year"),
+            )
+        )
+
         quarterly_frames.append(data)
 
-    return pd.concat(quarterly_frames, ignore_index=True)
+    return pl.concat(quarterly_frames)
