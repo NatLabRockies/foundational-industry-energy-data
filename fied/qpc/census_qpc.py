@@ -112,11 +112,11 @@ class QPC:
         Quarterly survey began 2008; start with 2010 due to  2007-2009
         recession.
         """
-        qpc_data = fetch_QPC(year).to_pandas()
+        qpc_data = fetch_QPC(year)
 
         if not include_all:
             # Don't use the aggregate manufacturing NAICS
-            qpc_data = qpc_data.filter(pl.col("NAICS") != "31-33")
+            qpc_data = qpc_data.query("NAICS != '31-33'")
 
         qpc_data.NAICS.update(
             qpc_data.NAICS.apply(lambda x: QPC.force_format(x))
@@ -127,6 +127,9 @@ class QPC:
         # Drop withheld estimates
         qpc_data = qpc_data[qpc_data.Weekly_op_hours != 'D']
 
+        #Interpolate for single value == 'S'
+        qpc_data.replace({'S': np.nan, 'Z': np.nan}, inplace=True)
+
         qpc_data.Weekly_op_hours.update(
             qpc_data.Weekly_op_hours.interpolate()
             )
@@ -136,6 +139,9 @@ class QPC:
             )
 
         qpc_data.fillna(0, inplace=True)
+
+        qpc_data['Weekly_op_hours'] = \
+            qpc_data.Weekly_op_hours.astype(np.float32)
 
         return qpc_data
 
