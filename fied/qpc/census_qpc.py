@@ -260,6 +260,36 @@ class QPC:
 
         return qpc_data
 
+
+def weekly_operating_hours(year: int) -> pl.LazyFrame:
+    """Weekly operating hours by NAICS code from the Census QPC survey
+
+    Fetches quarterly plant capacity data from the U.S. Census Bureau's
+    Quarterly Survey of Plant Capacity (QPC), calculates confidence
+    intervals on weekly operating hours, and reshapes the result into a
+    wide format with one row per 6-digit NAICS code and columns for each
+    quarter's low, mean, and high operating hours.
+
+    Parameters
+    ----------
+    year : int
+        Reporting year (2010 or later recommended; quarterly survey
+        began 2008 but 2007–2009 recession years are unreliable).
+
+    Returns
+    -------
+    pl.LazyFrame
+        Columns include ``naicsCode`` (6-digit NAICS) and, for each
+        quarter, ``weeklyOpHoursLow_qN``, ``weeklyOpHours_qN``, and
+        ``weeklyOpHoursHigh_qN``.
+    """
+    qpc = QPC()
+    data = qpc.get_qpc_data(year)
+    data = qpc.calc_hours_CI(data)
+    data = qpc.format_foundational(data)
+
+    return pl.from_pandas(data).lazy()
+
 if __name__ == '__main__':
     qpc = QPC()
     qpc_data = pd.DataFrame()
