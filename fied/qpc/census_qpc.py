@@ -116,7 +116,7 @@ class QPC:
 
         if not include_all:
             # Don't use the aggregate manufacturing NAICS
-            qpc_data = qpc_data.query("NAICS != '31-33'")
+            qpc_data = qpc_data.filter(pl.col("NAICS") != "31-33")
 
         qpc_data.NAICS.update(
             qpc_data.NAICS.apply(lambda x: QPC.force_format(x))
