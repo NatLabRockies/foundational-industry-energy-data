@@ -102,7 +102,10 @@ def fetch_QPC(year):
         known_hash = _KNOWN_HASHES.get(filename)
         url = base_url + filename
         fname = pooch.retrieve(
-            url, known_hash=known_hash, path=pooch.os_cache(Path("FIED", "QPC")), progressbar=True
+            url,
+            known_hash=known_hash,
+            path=pooch.os_cache(Path("FIED", "QPC")),
+            progressbar=True,
         )
 
         # Excel formatting for 2008 is different than all other years.
