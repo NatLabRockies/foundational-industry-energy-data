@@ -137,9 +137,6 @@ class QPC:
 
         qpc_data.fillna(0, inplace=True)
 
-        qpc_data['Weekly_op_hours'] = \
-            qpc_data.Weekly_op_hours.astype(np.float32)
-
         return qpc_data
 
     def calc_hours_CI(self, selected_qpc_data, CI=95):
