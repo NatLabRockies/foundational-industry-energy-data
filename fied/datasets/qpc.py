@@ -120,7 +120,8 @@ def fetch_QPC(year):
 
         data = (
             pl.from_pandas(raw)
-            .drop_nulls()
+            # null introduced above, avoid removing full rows
+            # .drop_nulls()
             .with_columns(
                 pl.lit(q).alias("Q"),
                 pl.lit(year).alias("Year"),
