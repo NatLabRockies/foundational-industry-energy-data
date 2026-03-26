@@ -1,6 +1,9 @@
+
+import os
+
 import pandas as pd
 import numpy as np
-import os
+import polars as pl
 import urllib
 import sys
 sys.path.append(os.path.abspath(""))
@@ -109,7 +112,7 @@ class QPC:
         Quarterly survey began 2008; start with 2010 due to  2007-2009
         recession.
         """
-        qpc_data = fetch_QPC(year)
+        qpc_data = fetch_QPC(year).to_pandas()
 
         if not include_all:
             # Don't use the aggregate manufacturing NAICS
