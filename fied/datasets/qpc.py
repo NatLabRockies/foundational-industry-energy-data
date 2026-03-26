@@ -99,8 +99,9 @@ def fetch_QPC(year):
             filename = filename.format(y, y) + q + excel_ex
 
         known_hash = _KNOWN_HASHES.get(filename)
+        url = base_url + filename
         fname = pooch.retrieve(
-            base_url + filename, known_hash=known_hash, path=pooch.os_cache("FIED"), progressbar=True
+            url, known_hash=known_hash, path=pooch.os_cache("FIED"), progressbar=True
         )
 
         # Excel formatting for 2008 is different than all other years.
@@ -110,7 +111,7 @@ def fetch_QPC(year):
                 fname, sheet_name=1, skiprows=4, usecols=range(0, 7), header=0
             )
 
-        except urllib.error.HTTPError:
+        except urllib.error.HTTPError as err:
             module_logger.error(f"Problem with {url}: {err}")
             raise
 
