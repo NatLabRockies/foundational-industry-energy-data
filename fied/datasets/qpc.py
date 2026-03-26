@@ -99,7 +99,7 @@ def fetch_QPC(year):
         else:
             filename = filename.format(y, y) + q + excel_ex
 
-        known_hash = _KNOWN_HASHES.get(filename)
+        known_hash = _KNOWN_HASHES.get(Path(filename))
         url = base_url + filename
         fname = pooch.retrieve(
             url,
