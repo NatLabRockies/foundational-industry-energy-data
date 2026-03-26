@@ -289,9 +289,3 @@ def weekly_operating_hours(year: int) -> pl.LazyFrame:
     data = qpc.format_foundational(data)
 
     return pl.from_pandas(data).lazy()
-
-if __name__ == '__main__':
-    qpc = QPC()
-    qpc_data = pd.DataFrame()
-    qpc_data = qpc.get_qpc_data(2017)
-    qpc_data = qpc.calc_hours_CI(qpc_data)
