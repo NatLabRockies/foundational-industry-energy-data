@@ -75,7 +75,7 @@ def fetch_QPC(year):
 
     base_url = "https://www2.census.gov/programs-surveys/qpc/tables/"
 
-    for q in ["q" + str(n) for n in range(1, 5)]:
+    for q in [f"q{n}" for n in range(1, 5)]:
         if (year >= 2017) & (year < 2020):
             y_url = "{!s}/{!s}_qtr_table_final_"
 
