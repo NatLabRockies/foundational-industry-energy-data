@@ -111,8 +111,8 @@ def fetch_QPC(year):
             )
 
         except urllib.error.HTTPError:
-            module_logger.error(f"Problem with {url}")
-            continue
+            module_logger.error(f"Problem with {url}: {err}")
+            raise
 
         # Drop positional column (index 2) and convert to polars
         raw = raw.drop(raw.columns[2], axis=1)
