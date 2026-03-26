@@ -124,9 +124,6 @@ class QPC:
         # Drop withheld estimates
         qpc_data = qpc_data[qpc_data.Weekly_op_hours != 'D']
 
-        #Interpolate for single value == 'S'
-        qpc_data.replace({'S': np.nan, 'Z': np.nan}, inplace=True)
-
         qpc_data.Weekly_op_hours.update(
             qpc_data.Weekly_op_hours.interpolate()
             )

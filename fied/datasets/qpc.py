@@ -114,8 +114,22 @@ def fetch_QPC(year):
             module_logger.error(f"Problem with {url}: {err}")
             raise
 
-        # Drop positional column (index 2) and convert to polars
+        # Drop positional column (index 2) and convert to polars.
         raw = raw.drop(raw.columns[2], axis=1)
+        # Remove rows without data, such as the comments in the bottom.
+        # todo! This is a weak criteria and vulnerable to errors.
+        raw = raw.dropna()
+
+        # These replacements should be done here, when we can verify
+        # what does it mean Z, D, and S.
+        # Some cases of: Z  Standard error is less than 0.05.
+        # Consider replacing by 0.05 instead of None.
+        raw = raw.replace({"Z": None})
+        # Some cases of: D  Estimate withheld to avoid disclosing data
+        #   for individual companies.
+        raw = raw.replace({"D": None})
+        # Some cases of: S   Estimate does not meet publication standards
+        raw = raw.replace({"S": None})
         raw.columns = _OUTPUT_COLUMNS
 
         data = (
