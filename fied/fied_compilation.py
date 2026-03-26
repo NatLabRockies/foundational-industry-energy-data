@@ -1317,7 +1317,8 @@ def doit(year: int = 2017):
         axis=0, ignore_index=True
         )
 
-    qpc_data = weekly_operating_hours(year)
+    # Transitioning to polars
+    qpc_data = weekly_operating_hours(year).collect().to_pandas()
 
     final_data = assemble_final_df(final_energy_emissions_data, frs_data, qpc_data,
                                    year=year)
