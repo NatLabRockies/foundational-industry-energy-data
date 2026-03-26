@@ -11,9 +11,9 @@ from .mod import (
     fetch_shapefile_county,
     fetch_shapefile_NHDP,
     fetch_state_FIPS,
-    fetch_QPC,
     fetch_ghgrp_records,
 )
 
 from .cbp import fetch_cbp_county
 from .naics import fetch_naics
+from .qpc import fetch_QPC

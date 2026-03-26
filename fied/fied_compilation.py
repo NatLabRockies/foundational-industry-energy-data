@@ -17,7 +17,7 @@ from fied.ghgrp import run_GHGRP
 from fied.ghgrp.ghgrp_fac_unit import GHGRP_unit_char
 from fied.nei.nei_EF_calculations import NEI
 from fied.frs.frs_extraction import FRS
-from fied.qpc.census_qpc import QPC
+from fied.qpc.census_qpc import weekly_operating_hours
 from fied.geocoder.geopandas_tools import FiedGIS
 import fied.geocoder.geo_tools
 
@@ -1317,7 +1317,8 @@ def doit(year: int = 2017):
         axis=0, ignore_index=True
         )
 
-    qpc_data = QPC().main(year)
+    # Transitioning to polars
+    qpc_data = weekly_operating_hours(year).collect().to_pandas()
 
     final_data = assemble_final_df(final_energy_emissions_data, frs_data, qpc_data,
                                    year=year)

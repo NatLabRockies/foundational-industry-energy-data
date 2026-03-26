@@ -1,12 +1,49 @@
+import os
+
 import pandas as pd
 import numpy as np
-import os
+import polars as pl
 import urllib
 import sys
+
 sys.path.append(os.path.abspath(""))
 from fied.tools.naics_matcher import naics_matcher
 
 from fied.datasets import fetch_QPC
+
+
+def qpc_data(year, include_all=False):
+    """
+    Quarterly survey began 2008; start with 2010 due to  2007-2009
+    recession.
+    """
+    qpc_data = fetch_QPC(year)
+
+    if not include_all:
+        # Don't use the aggregate manufacturing NAICS
+        qpc_data = qpc_data.query("NAICS != '31-33'")
+
+    qpc_data.NAICS.update(qpc_data.NAICS.apply(lambda x: QPC.force_format(x)))
+
+    qpc_data = QPC.format_naics(qpc_data)
+
+    # Drop withheld estimates
+    qpc_data = qpc_data[qpc_data.Weekly_op_hours != "D"]
+
+    # Interpolate for single value == 'S'
+    qpc_data.replace({"S": np.nan, "Z": np.nan}, inplace=True)
+
+    qpc_data.Weekly_op_hours.update(qpc_data.Weekly_op_hours.interpolate())
+
+    qpc_data["Hours_Standard Error"].update(
+        qpc_data["Hours_Standard Error"].interpolate()
+    )
+
+    qpc_data.fillna(0, inplace=True)
+
+    qpc_data["Weekly_op_hours"] = qpc_data.Weekly_op_hours.astype(np.float32)
+
+    return qpc_data
 
 class QPC:
 
@@ -105,42 +142,7 @@ class QPC:
         return df
 
     def get_qpc_data(self, year, include_all=False):
-        """
-        Quarterly survey began 2008; start with 2010 due to  2007-2009
-        recession.
-        """
-        qpc_data = fetch_QPC(year)
-
-        if not include_all:
-            # Don't use the aggregate manufacturing NAICS
-            qpc_data = qpc_data.query("NAICS != '31-33'")
-
-        qpc_data.NAICS.update(
-            qpc_data.NAICS.apply(lambda x: QPC.force_format(x))
-            )
-
-        qpc_data = QPC.format_naics(qpc_data)
-
-        # Drop withheld estimates
-        qpc_data = qpc_data[qpc_data.Weekly_op_hours != 'D']
-
-        #Interpolate for single value == 'S'
-        qpc_data.replace({'S': np.nan, 'Z': np.nan}, inplace=True)
-
-        qpc_data.Weekly_op_hours.update(
-            qpc_data.Weekly_op_hours.interpolate()
-            )
-
-        qpc_data['Hours_Standard Error'].update(
-            qpc_data['Hours_Standard Error'].interpolate()
-            )
-
-        qpc_data.fillna(0, inplace=True)
-
-        qpc_data['Weekly_op_hours'] = \
-            qpc_data.Weekly_op_hours.astype(np.float32)
-
-        return qpc_data
+        return qpc_data(year, include_all=False)
 
     def calc_hours_CI(self, selected_qpc_data, CI=95):
         """
@@ -257,8 +259,32 @@ class QPC:
 
         return qpc_data
 
-if __name__ == '__main__':
+
+def weekly_operating_hours(year: int) -> pl.LazyFrame:
+    """Weekly operating hours by NAICS code from the Census QPC survey
+
+    Fetches quarterly plant capacity data from the U.S. Census Bureau's
+    Quarterly Survey of Plant Capacity (QPC), calculates confidence
+    intervals on weekly operating hours, and reshapes the result into a
+    wide format with one row per 6-digit NAICS code and columns for each
+    quarter's low, mean, and high operating hours.
+
+    Parameters
+    ----------
+    year : int
+        Reporting year (2010 or later recommended; quarterly survey
+        began 2008 but 2007–2009 recession years are unreliable).
+
+    Returns
+    -------
+    pl.LazyFrame
+        Columns include ``naicsCode`` (6-digit NAICS) and, for each
+        quarter, ``weeklyOpHoursLow_qN``, ``weeklyOpHours_qN``, and
+        ``weeklyOpHoursHigh_qN``.
+    """
     qpc = QPC()
-    qpc_data = pd.DataFrame()
-    qpc_data = qpc.get_qpc_data(2017)
-    qpc_data = qpc.calc_hours_CI(qpc_data)
+    data = qpc.get_qpc_data(year)
+    data = qpc.calc_hours_CI(data)
+    data = qpc.format_foundational(data)
+
+    return pl.from_pandas(data).lazy()
