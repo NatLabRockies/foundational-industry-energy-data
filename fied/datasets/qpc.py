@@ -23,6 +23,27 @@ _OUTPUT_COLUMNS = [
     "Hours_Standard Error",
 ]
 
+# SHA-256 hashes for known QPC files. Files not listed here are fetched
+# without verification (known_hash=None), which is the original behavior.
+_KNOWN_HASHES = {
+    "2017_qtr_table_final_q1.xlsx": "sha256:9839eb5b32e2722fb3e38f6ad4c29cb678032eb35b44354cf64cfad89e919caa",
+    "2017_qtr_table_final_q2.xlsx": "sha256:a06ea334dc2b8d3c1d18e891393a99a1493d1ce313964b7257958c318d63764f",
+    "2017_qtr_table_final_q3.xlsx": "sha256:9af153d11e6ae3ee8376e9f081f894dec98e28ae9b6df1c5aef8161ce912dcc6",
+    "2017_qtr_table_final_q4.xlsx": "sha256:e2927a491a1e8a5add954583456474ebb87ece524ae9f9009eb504ed0235ab87",
+    "2019_qtr_table_final_q1.xlsx": "sha256:f3412ae9d6f831eb9bcd55ae3005448232bdb6791ad03d6fc39582574a1ad70e",
+    "2019_qtr_table_final_q2.xlsx": "sha256:e5e8d74dbee8c258e8203d4fdcb6b128aa664d51ed7935580c4170dad9976919",
+    "2019_qtr_table_final_q3.xlsx": "sha256:531ad948026713b4a7e000041979cddb81c403f5904113b8aafec78db451230a",
+    "2019_qtr_table_final_q4.xlsx": "sha256:ad22ba33893545581061d2677982bf9995492e8cbf850e03cdc760c61e8a81d5",
+    "2020-qtr-table-final-q1.xlsx": "sha256:619a351a8ae7c39139bab23b3248e41a3476c9674a4fa39b782f31b49e1af022",
+    "2020-qtr-table-final-q2.xlsx": "sha256:3332e6806f6ed8984d71ee3fe2d6c43eeb77c81f4169122f01ed149dd9634ed8",
+    "2020-qtr-table-final-q3.xlsx": "sha256:475f44c9646d6f848d79e709865255d6bc6724e89352e0848f58e3e39fad0690",
+    "2020_qtr_table_final_q4.xlsx": "sha256:93886980180fdf3ec2e5509b5b7e04108311b3a2e85a5c9626b5dfeec87e46e8",
+    "2022-qtr-table-final-q1.xlsx": "sha256:a67a278bdab928227dcc006e0c0c94a0f1555c0f18a915d90ae90d56c542be41",
+    "2022-qtr-table-final-q2.xlsx": "sha256:34d50fc8963edb34ade784c918b6d17083ac6a5965c8cf43a23de80a987333eb",
+    "2022-qtr-table-final-q3.xlsx": "sha256:fc630bccf8e91e7d53d2feb8e1cc5b63fc9bbdd46c6d95519a4fd5318badd445",
+    "2022-qtr-table-final-q4.xlsx": "sha256:ac8bfbb7aa685a8aad0e2433a1a07409eccb946c1c231ac8682e0f36d4767edb",
+}
+
 
 def fetch_QPC(year):
     """Fetch Quarterly Survey of Plant Capacity data for a given year
@@ -41,28 +62,6 @@ def fetch_QPC(year):
         Combined quarterly data with columns: NAICS, Description,
         Utilization Rate, UR_Standard Error, Weekly_op_hours,
         Hours_Standard Error, Q, Year.
-
-    Known hashes
-    -------------
-    2017_qtr_table_final_q1.xlsx: 9839eb5b32e2722fb3e38f6ad4c29cb678032eb35b44354cf64cfad89e919caa
-    2017_qtr_table_final_q2.xlsx: a06ea334dc2b8d3c1d18e891393a99a1493d1ce313964b7257958c318d63764f
-    2017_qtr_table_final_q3.xlsx: 9af153d11e6ae3ee8376e9f081f894dec98e28ae9b6df1c5aef8161ce912dcc6
-    2017_qtr_table_final_q4.xlsx: e2927a491a1e8a5add954583456474ebb87ece524ae9f9009eb504ed0235ab87
-
-    2019_qtr_table_final_q1.xlsx: f3412ae9d6f831eb9bcd55ae3005448232bdb6791ad03d6fc39582574a1ad70e
-    2019_qtr_table_final_q2.xlsx: e5e8d74dbee8c258e8203d4fdcb6b128aa664d51ed7935580c4170dad9976919
-    2019_qtr_table_final_q3.xlsx: 531ad948026713b4a7e000041979cddb81c403f5904113b8aafec78db451230a
-    2019_qtr_table_final_q4.xlsx: ad22ba33893545581061d2677982bf9995492e8cbf850e03cdc760c61e8a81d5
-
-    2020-qtr-table-final-q1.xlsx: 619a351a8ae7c39139bab23b3248e41a3476c9674a4fa39b782f31b49e1af022
-    2020-qtr-table-final-q2.xlsx: 3332e6806f6ed8984d71ee3fe2d6c43eeb77c81f4169122f01ed149dd9634ed8
-    2020-qtr-table-final-q3.xlsx: 475f44c9646d6f848d79e709865255d6bc6724e89352e0848f58e3e39fad0690
-    2020_qtr_table_final_q4.xlsx: 93886980180fdf3ec2e5509b5b7e04108311b3a2e85a5c9626b5dfeec87e46e8
-
-    2022-qtr-table-final-q1.xlsx: a67a278bdab928227dcc006e0c0c94a0f1555c0f18a915d90ae90d56c542be41
-    2022-qtr-table-final-q2.xlsx: 34d50fc8963edb34ade784c918b6d17083ac6a5965c8cf43a23de80a987333eb
-    2022-qtr-table-final-q3.xlsx: fc630bccf8e91e7d53d2feb8e1cc5b63fc9bbdd46c6d95519a4fd5318badd445
-    2022-qtr-table-final-q4.xlsx: ac8bfbb7aa685a8aad0e2433a1a07409eccb946c1c231ac8682e0f36d4767edb
     """
     y = str(year)
 
@@ -77,30 +76,31 @@ def fetch_QPC(year):
 
     for q in [f"q{n}" for n in range(1, 5)]:
         if (year >= 2017) & (year < 2020):
-            y_url = "{!s}/{!s}_qtr_table_final_"
+            filename = "{!s}/{!s}_qtr_table_final_"
 
         # elif year < 2010:
         #
-        #     y_url = \
+        #     filename = \
         #         '{!s}/qpc-quarterly-tables/{!s}_qtr_combined_tables_final_'
 
         elif (year == 2020) & (q == "q4"):
-            y_url = "{!s}/{!s}_qtr_table_final_"
+            filename = "{!s}/{!s}_qtr_table_final_"
 
         elif year > 2019:
-            y_url = "{!s}/{!s}-qtr-table-final-"
+            filename = "{!s}/{!s}-qtr-table-final-"
 
         else:
-            y_url = "{!s}/qpc-quarterly-tables/{!s}_qtr_table_final_"
+            filename = "{!s}/qpc-quarterly-tables/{!s}_qtr_table_final_"
 
         if (year == 2016) & (q == "q4"):
-            url = base_url + y_url.format(y, y) + q + ".xlsx?#"
+            filename = filename.format(y, y) + q + ".xlsx?#"
 
         else:
-            url = base_url + y_url.format(y, y) + q + excel_ex
+            filename = filename.format(y, y) + q + excel_ex
 
+        known_hash = _KNOWN_HASHES.get(filename)
         fname = pooch.retrieve(
-            url, known_hash=None, path=pooch.os_cache("FIED"), progressbar=True
+            base_url + filename, known_hash=known_hash, path=pooch.os_cache("FIED"), progressbar=True
         )
 
         # Excel formatting for 2008 is different than all other years.
