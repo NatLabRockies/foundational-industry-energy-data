@@ -635,6 +635,50 @@ class SCC_ID:
         id_scc_df.to_csv(self._FIEDPATH / 'scc' / 'iden_scc.csv')
 
 
+def scc_unit_and_fuel_types():
+    """
+
+    Notes
+    -----
+    - The order shouldn't matter, so as long as we assert that SCC is
+      unique, we don't need _row_idx.
+    - Original code, before the 2-tier, dropped records without unit
+      or fuel type. The transition code kept it. Confirm that it is
+      safe to remove those records.
+    """
+    scc =  datasets.fetch_scc().with_row_index(name="_row_idx")
+    # Assume SCC is unique
+    # assert scc.select(pl.col("SCC").is_duplicated().any()).collect().item() is False
+
+    identified = pl.concat(
+        [
+            id_external_combustion(scc),
+            id_stationary_fuel_combustion(scc),
+            id_internal_combustion_engine(scc),
+            id_chemical_evaporation(scc),
+            id_industrial_processes(scc),
+        ],
+        how="diagonal_relaxed"
+    )
+
+    scc_with_types = scc.join(
+        identified.select([
+            "_row_idx", "SCC", "unit_type_lv1", "unit_type_lv2",
+            "fuel_type_lv1", "fuel_type_lv2"
+        ]),
+        on="_row_idx",
+        how="left")
+
+    # There are some cases with letters, such as 28100010F0, so we
+    # can't convert to i64. I don't know if this F0 is new.
+    # return SCC_ID().build_id().with_columns(
+    #     pl.col("SCC").cast(pl.Int64)
+    # )
+
+    # return scc_with_types.sort("_row_idx").drop("_row_idx")
+    return scc_with_types.sort("_row_idx")
+
+
 if __name__ == '__main__':
 
     id_scc = SCC_ID().main()
