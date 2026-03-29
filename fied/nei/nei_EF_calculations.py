@@ -514,14 +514,15 @@ class NEI:
         -------
         iden_scc : pandas.DataFrame
             SCC codes with identified unit types and fuel types.
-
         """
         iden_scc = scc_unit_and_fuel_types()
 
         iden_scc.rename(
             mapping={
-                'unit_type': 'scc_unit_type',
-                'fuel_type': 'scc_fuel_type'
+                'unit_type_lv1': 'scc_unit_type_lv1',
+                'unit_type_lv2': 'scc_unit_type_lv2',
+                'fuel_type_lv1': 'scc_fuel_type_lv1',
+                'fuel_type_lv2': 'scc_fuel_type_lv2',
             }
         )
 
