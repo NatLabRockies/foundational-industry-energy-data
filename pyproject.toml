@@ -67,6 +67,9 @@ fied = { path = ".", editable = true }
 
 [tool.pixi.tasks]
 
+[tool.pixi.feature.doc.tasks]
+build-doc = { cmd = "make clean html", cwd = "docs", env = { SPHINXOPTS = "--fail-on-warning --keep-going --nitpicky" }}
+
 [tool.pixi.dependencies]
 python = "~=3.9.0"
 dask = ">=2023.2.0,<2024"
