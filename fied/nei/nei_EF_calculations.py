@@ -18,7 +18,7 @@ from fied.datasets import fetch_nei_2017, fetch_nei_2020, fetch_webfirefactors
 
 logging.basicConfig(level=logging.INFO)
 
-class NEI ():
+class NEI :
     """
     Calculates unit throughput and energy input (later op hours?) from
     emissions and emissions factors, specifically from: PM, SO2, NOX,
@@ -1653,7 +1653,7 @@ class NEI ():
             generic fuel types that have been applied to NEI data.
         """
 
-        with open(Path(self._FIEDPATH, "tools/type_standardization.yml"),'r') as file:
+        with open(Path(self._FIEDPATH, "tools/type_standardization.yml")) as file:
             docs = yaml.safe_load_all(file)
 
             for i, d in enumerate(docs):

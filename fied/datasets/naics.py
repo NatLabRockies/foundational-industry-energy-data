@@ -32,7 +32,7 @@ def fetch_naics(naics_vintage=2022):
             "Only 2017 and 2022 NAICS codes are available."
         )
 
-    module_logger.info("Accessing NAICS codes from: {}".format(url))
+    module_logger.info(f"Accessing NAICS codes from: {url}")
     fname = pooch.retrieve(
         url=url,
         known_hash=known_hash,
@@ -40,11 +40,11 @@ def fetch_naics(naics_vintage=2022):
         downloader=HTTPDownloader(progressbar=True, verify=True),
     )
 
-    module_logger.debug("Reading NAICS codes into DataFrame: {}".format(fname))
+    module_logger.debug(f"Reading NAICS codes into DataFrame: {fname}")
     all_naics = pd.read_excel(fname, usecols=[0, 1], engine="openpyxl")
     all_naics.dropna(how="all", axis=1, inplace=True)
     all_naics.dropna(how="all", axis=0, inplace=True)
 
-    module_logger.debug("NAICS codes with {} entries loaded".format(len(all_naics)))
+    module_logger.debug(f"NAICS codes with {len(all_naics)} entries loaded")
 
     return all_naics

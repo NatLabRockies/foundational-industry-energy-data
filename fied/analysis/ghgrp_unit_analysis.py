@@ -91,7 +91,7 @@ def plot_unit_types_breakdown(naics_list, ghgrp_df):
         
         plt.tight_layout(pad=2.5)
     
-        plt.savefig('GHGRP_naics_unit_type\{}'.format(n))
+        plt.savefig(f'GHGRP_naics_unit_type\{n}')
     
     return
 
@@ -145,7 +145,7 @@ def plot_industries_by_unit(unit_list, ghgrp_df):
 
         plt.tight_layout(pad=1)
 
-        plt.savefig('GHGRP_unit_types\{}'.format(n))
+        plt.savefig(f'GHGRP_unit_types\{n}')
         
 
     return
