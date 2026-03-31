@@ -2,9 +2,9 @@ Sources of Industrial Energy Data for the United States
 #######################################################
 
 This page provides a brief overview of sources of U.S. industrial energy data, including breif descriptions of their publication timelines and resolution.
-Industrial energy datasets developed by NREL are discussed on a :doc:`separate page </nrel_data>`.
-By and large, most industrial energy data is available for "industry" (an aggregation of `North American Industrial Classification System [NAICS] codes <https://www.census.gov/naics/>`_ for Agriculture [NAICS 11], Mining [NAICS 21], Construction [NAICS 23], and Manufacturing [NAICS 31-33]) or for manufacturing industries. Unlike manufacturing, the non-manufacturing sectors do not have their own EIA end-use survey and energy data collection by other federal agencies is limited.  
-The current state of industrial energy data collection and dissemination can be explained by various historical developments. This historical context is summarized in this project :doc:`here </data_history>` and described in more detail in an `NREL technical report <https://www.nrel.gov/docs/fy24osti/90442.pdf>`_. 
+Industrial energy datasets developed by NLR are discussed on a :doc:`separate page </nrel_data>`.
+By and large, most industrial energy data is available for "industry" (an aggregation of `North American Industrial Classification System [NAICS] codes <https://www.census.gov/naics/>`_ for Agriculture [NAICS 11], Mining [NAICS 21], Construction [NAICS 23], and Manufacturing [NAICS 31-33]) or for manufacturing industries. Unlike manufacturing, the non-manufacturing sectors do not have their own EIA end-use survey and energy data collection by other federal agencies is limited.
+The current state of industrial energy data collection and dissemination can be explained by various historical developments. This historical context is summarized in this project :doc:`here </data_history>` and described in more detail in an `NLR technical report <https://www.nlr.gov/docs/fy24osti/90442.pdf>`_.
 
 .. csv-table:: Summary of Industrial Energy Data Sources
    :header: "Source", "Data Prodct", "Publication Timeline", "Geographic Resolution", "Industry Resolution", "Fuel Type Disaggregation", "End-Use Disaggregation", "Notes" 
@@ -54,7 +54,7 @@ Most data collected by the Census Bureau relate to the economic characteristics 
 U.S. Environmental Protection Agency (EPA)
 ******************************************
 
-Several EPA datasets provide detailed information about facilities and their individual units. Although these datasets are not explicitly collected to estimated energy use, the emissions they report provide a path for alternative estimates of energy use, as documented in various :doc:`NREL datasets </nrel_data>`.   
+Several EPA datasets provide detailed information about facilities and their individual units. Although these datasets are not explicitly collected to estimated energy use, the emissions they report provide a path for alternative estimates of energy use, as documented in various :doc:`NLR datasets </nrel_data>`.
 
 
 
