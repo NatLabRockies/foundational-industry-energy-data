@@ -30,7 +30,8 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.githubpages',
     'sphinx.ext.viewcode',
-    'sphinx.ext.napoleon'
+    'sphinx.ext.napoleon',
+    "sphinxcontrib.bibtex",
 ]
 
 source_suffix = {
