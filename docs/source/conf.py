@@ -24,6 +24,7 @@ sys.path.insert(0, os.path.abspath('../../'))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
+    "myst_parser",
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
@@ -32,11 +33,9 @@ extensions = [
     'sphinx.ext.napoleon'
 ]
 
-intersphinx_mapping = {
-    'python': ('https://docs.python.org/3/', None),
-    'pandas': ('https://pandas.pydata.org/pandas-docs/stable', None),
-    'numpy': ('https://numpy.org/doc/stable/', None),
-    'plotly': ('https://plot.ly/python/', None)
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".md": "markdown",
 }
 
 templates_path = ['_templates']
@@ -54,22 +53,53 @@ html_static_path = ['_static']
 
 # -- Extension configuration -------------------------------------------------
 
-autosummary_generate = True  # Turn on sphinx.ext.autosummary
-autoclass_content = "both"  # Add __init__ doc (ie. params) to class summaries
-autodoc_member_order = 'bysource'
-autodoc_inherit_docstrings = True  # If no docstring, inherit from base class
+# -- Autodoc configuration --
 add_module_names = False  # Remove namespaces from class/method signatures
-napoleon_google_docstring = True
+autoclass_content = "both"  # Add __init__ doc (ie. params) to class summaries
+autodoc_inherit_docstrings = True  # If no docstring, inherit from base class
+autodoc_typehints = "none"
+
+autodoc_type_aliases = {
+    "pd.DataFrame": "pandas.DataFrame",
+    "pd.Series": "pandas.Series",
+    "np.ndarray": "numpy.ndarray",
+    "np.array": "numpy.ndarray",
+    "pl.DataFrame": "polars.DataFrame",
+    "pl.LazyFrame": "polars.LazyFrame",
+}
+
+# -- Autosummary configuration --
+autosummary_generate = True
+autodoc_member_order = "bysource"   # Keep methods in source-code order
+
+# -- Intersphinx configuration --
+intersphinx_mapping = {
+    "geopandas": ("https://geopandas.org/en/stable/", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "python": ("https://docs.python.org/3/", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
+    "plotly": ("https://plotly.github.io/plotly.py-docs/", None),
+    "polars": ("https://docs.pola.rs/api/python/stable/", None),
+}
+tls_verify = False
+
+# -- Napoleon configuration --
+#napoleon_google_docstring = True
 napoleon_numpy_docstring = True
-napoleon_include_init_with_doc = False
-napoleon_include_private_with_doc = False
-napoleon_include_special_with_doc = True
-napoleon_use_admonition_for_examples = False
-napoleon_use_admonition_for_notes = False
-napoleon_use_admonition_for_references = False
-napoleon_use_ivar = False
-napoleon_use_param = True
+#napoleon_include_init_with_doc = False
+#napoleon_include_private_with_doc = False
+#napoleon_include_special_with_doc = True
+#napoleon_use_admonition_for_examples = False
+#napoleon_use_admonition_for_notes = False
+#napoleon_use_admonition_for_references = False
+#napoleon_use_ivar = False
+#napoleon_use_param = True
 napoleon_use_rtype = True
-napoleon_preprocess_types = False
-napoleon_type_aliases = None
-napoleon_attr_annotations = True
+#napoleon_preprocess_types = False
+#napoleon_type_aliases = None
+#napoleon_attr_annotations = True
+
+# -- Suppress cross-reference warnings for unresolvable types --
+nitpick_ignore_regex = [
+    (r"py:class", r"optional"),              # NumPy docstring convention ",     optional"
+]
