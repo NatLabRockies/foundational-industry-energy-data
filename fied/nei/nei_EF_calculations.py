@@ -18,7 +18,7 @@ from fied.datasets import fetch_nei_2017, fetch_nei_2020, fetch_webfirefactors
 
 logging.basicConfig(level=logging.INFO)
 
-class NEI :
+class NEI:
     """
     Calculates unit throughput and energy input (later op hours?) from
     emissions and emissions factors, specifically from: PM, SO2, NOX,
