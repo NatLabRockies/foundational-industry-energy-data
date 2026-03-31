@@ -18,4 +18,5 @@ __pycache__/
 *$py.class
 
 # Sphinx documentation
+# docs/build/
 docs/source/_autosummary/
