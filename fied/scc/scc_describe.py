@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 
 Parse SCCs for unit type and fuel type (and capacity?)

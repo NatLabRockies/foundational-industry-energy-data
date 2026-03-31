@@ -348,7 +348,7 @@ class Tools:
 
         for unit in self._unit_types:
 
-            unit_pattern = re.compile(r'({})'.format(unit), flags=re.IGNORECASE)
+            unit_pattern = re.compile(rf'({unit})', flags=re.IGNORECASE)
 
             try:
                 unit_search = unit_pattern.search(unitType)

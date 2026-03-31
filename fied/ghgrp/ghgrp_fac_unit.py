@@ -12,7 +12,7 @@ from fied import datasets
 
 module_logger = logging.getLogger(__name__)
 
-class GHGRP_unit_char():
+class GHGRP_unit_char:
     logger = logging.getLogger(f"{__name__}.GHGRP_unit_char")
 
     def __init__(self, ghgrp_energy_file, reporting_year):
@@ -42,7 +42,7 @@ class GHGRP_unit_char():
             generic fuel types that have been applied to NEI data.
         """
 
-        with open(Path(__file__).parents[1] / 'tools' / 'type_standardization.yml', 'r') as file:
+        with open(Path(__file__).parents[1] / 'tools' / 'type_standardization.yml') as file:
             docs = yaml.safe_load_all(file)
 
             for i, d in enumerate(docs):

@@ -159,7 +159,7 @@ select = [
   # "SIM", # flake8-simplify
   "TID", # flake8-tidy-imports (absolute imports)
   # "TRY", # tryceratops
-  # "UP", # pyupgrade
+  "UP", # pyupgrade
   # "W", # Warning
 ]
 ignore = [

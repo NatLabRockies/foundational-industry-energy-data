@@ -152,8 +152,8 @@ def plot_unit_types_breakdown(nei_df):
             
             figsz = (25,15)
             color_seq = matplotlib.colors.ListedColormap(
-                (sns.color_palette("tab20b",20)+\
-                             sns.color_palette("tab20",8)))
+                sns.color_palette("tab20b",20)+\
+                             sns.color_palette("tab20",8))
     
             pol_df[pol_df['naics_code']==n].groupby(
                 ['eis_facility_id','scc_unit_type'])['eis_unit_id']\
@@ -169,8 +169,7 @@ def plot_unit_types_breakdown(nei_df):
                 .sum().unstack(level=0).T.plot.bar(
                                    ax=ax2,stacked=True, 
                                    figsize=figsz,
-                                   ylabel='Emissions, {} ({})'.format(
-                                       p,emiss_unit),
+                                   ylabel=f'Emissions, {p} ({emiss_unit})',
                                    cmap=color_seq,
                                    legend=False)
     
@@ -187,7 +186,7 @@ def plot_unit_types_breakdown(nei_df):
     
             plt.tight_layout(pad=2.5)
     
-            plt.savefig('NEI_unit_types_{}\{}'.format(p,n))
+            plt.savefig(f'NEI_unit_types_{p}\{n}')
             
             plt.close(fig)
             
