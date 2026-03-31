@@ -51,6 +51,7 @@ dependencies = [
 ]
 [project.optional-dependencies]
 doc = [
+  "myst-parser>=3.0.1,<4",
   "sphinx>=7.3.7",
   "sphinx-press-theme>=0.9.1,<0.10",
 ]
@@ -114,6 +115,7 @@ ruff = ">=0.9.6,<0.10"
 [tool.pixi.feature.doc.dependencies]
 make = ">=4.4.1,<5"
 sphinx = ">=7.4.7,<8"
+myst-parser = ">=3.0.1,<4"
 
 [tool.pixi.feature.test.dependencies]
 pytest = "~=7.4.0"
