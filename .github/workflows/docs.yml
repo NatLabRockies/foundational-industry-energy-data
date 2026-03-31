@@ -9,6 +9,7 @@ on:
       - 'v*.*.*'
   release:
     types: [created, published]
+  workflow_dispatch:
 
 jobs:
   build_html:
