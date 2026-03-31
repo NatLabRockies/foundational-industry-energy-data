@@ -73,6 +73,11 @@ autodoc_type_aliases = {
 autosummary_generate = True
 autodoc_member_order = "bysource"   # Keep methods in source-code order
 
+# -- BibTeX configuration --
+bibtex_bibfiles = ["references.bib"]
+bibtex_default_style = "unsrt"
+bibtex_reference_style = "author_year"
+
 # -- Intersphinx configuration --
 intersphinx_mapping = {
     "geopandas": ("https://geopandas.org/en/stable/", None),
