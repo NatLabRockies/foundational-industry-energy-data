@@ -16,3 +16,7 @@ fied/_version.py
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Sphinx documentation
+# docs/build/
+docs/source/_autosummary/
