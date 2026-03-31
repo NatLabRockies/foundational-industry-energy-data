@@ -52,7 +52,12 @@ Represents an evolution of the methodology used in the :ref:`2016 dataset <ind_c
 United States County-Level Industrial Energy Use (2018)
 *******************************************************
 
-First implementation of a method to derive national estimates of industrial energy use at a county level using the foundataion of deriving facility-level combustion energy estimates. Includes estimates for non-manufacturing industries, in addition to manufacturing industries, as well as additional disaggregation by end use (e.g. machine drive process heating facility lighting is provided for manufacturing agriculture and mining industries).   
+First implementation of a method to derive national estimates of industrial
+energy use at a county level using the foundation of deriving facility-level
+combustion energy estimates. Includes estimates for non-manufacturing
+industries, in addition to manufacturing industries, as well as additional
+disaggregation by end use (e.g. machine drive process heating facility lighting
+is provided for manufacturing agriculture and mining industries).
 
 * `County-Level Energy Use dataset <https//github.com/NatLabRockies/Industry-Energy-Tool/>`_
 * `NLR technical report: "The Industry Energy Tool (IET): Documentation" <https://doi.org/10.2172/1484348>`_
