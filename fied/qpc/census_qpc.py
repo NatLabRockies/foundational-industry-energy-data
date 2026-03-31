@@ -260,7 +260,7 @@ class QPC:
         return qpc_data
 
 
-def weekly_operating_hours(year: int) -> pl.LazyFrame:
+def weekly_operating_hours(year: int) -> polars.LazyFrame:
     """Weekly operating hours by NAICS code from the Census QPC survey
 
     Fetches quarterly plant capacity data from the U.S. Census Bureau's
