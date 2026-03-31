@@ -83,16 +83,16 @@ The USDA collects a limited amount of energy consumption data for farming operat
 The USDA also maintains the `Federal Life Cycle Assessment (LCA) Commons <https://www.lcacommons.gov>`_, a data repository to support LCA.
 
 
-Justice-Focused
-***************
+Socioeconomic -- Focused
+************************
 
 An increasing number of data products and associated mapping tools have been developed that bring together the locations industrial facilities with the socioeconomic conditions of their surrounding communities.
 These include, but are not limted to:
 
-* `Corporate Toxics Information Project <https://www.peri.umass.edu/corporate-toxics-information-project/>`_: Datasets linking facility ownership to emissions of air emissions and toxics. Developed by the University of Massachusetts Amherst. 
-* `Climate and Economic Justice Screening Tool (CEJST) <https://screeningtool.geoplatform.gov/>`_: Dataset combining indicators of climate change, energy, health, housing, legacy pollution, transportation, water and wastewater, and workforce development burdens. Developed by the White House Council on Environmental Quality.
-* `Energy Communitites IWG Site Review Tool <https://edxspatial.arcgis.netl.doe.gov/experience_builder/IWGSiteReviewTool/index.html>`_:. Dataset developed to link information on industrial facility locations, brownfields, infrastructure, and community attributes. Developed by the National Energy Technology Laboratory and DOE.
-* `Employment Vulnerability to the Energy Transition (E-VET) Tool <https://kailingraham.github.io/ecf-vis-tool/>`_: Analysis and dataset identifying communities that may be vulnerable in an energy transition based on their reliance on carbon-intensive industries. Based on 2024 work from `Kailin Graham and Christopher Knittel <https://doi.org/10.1073/pnas.2314773121>`_.   
+* `Corporate Toxics Information Project <https://www.peri.umass.edu/corporate-toxics-information-project/>`_: Datasets linking facility ownership to emissions of air emissions and toxics. Developed by the University of Massachusetts Amherst.
+* `Climate and Economic Screening Tool (CEJST) <https://screeningtool.geoplatform.gov/>`_: Dataset combining indicators of long term variability, energy, health, housing, legacy pollution, transportation, water and wastewater, and workforce development burdens. Developed by the White House Council on Environmental Quality.
+* `Energy Communitites IWG Site Review Tool <https://edxspatial.arcgis.netl.doe.gov/experience_builder/IWGSiteReviewTool/index.html>`_: Dataset developed to link information on industrial facility locations, brownfields, infrastructure, and community attributes. Developed by the National Energy Technology Laboratory and DOE.
+* `Employment Vulnerability to the Energy Transition (E-VET) Tool <https://kailingraham.github.io/ecf-vis-tool/>`_: Analysis and dataset identifying communities that may be vulnerable in an energy transition based on their reliance on carbon-intensive industries. Based on 2024 work from `Kailin Graham and Christopher Knittel <https://doi.org/10.1073/pnas.2314773121>`_.
 
 
 
