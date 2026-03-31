@@ -2,7 +2,11 @@
 NLR Industrial Energy Datasets
 ##############################
 
-NLR has developed several related and oftentimes overlapping industrial energy datasets. All datasets have been developed as attempts to overcome the limited resolution of traditional sources of energy data and are linked by their use of `EPA Greenhouse Gas Reporting Program (GHGRP) <https://enviro.epa.gov/envirofacts/ghg/search>`_ greenhouse gas emissions data to derive facility combustion energy use.
+NLR has developed several related and oftentimes overlapping industrial energy
+datasets. All datasets have been developed as attempts to overcome the limited
+resolution of traditional sources of energy data and are linked by their use of
+`EPA Greenhouse Gas Reporting Program (GHGRP) <https://enviro.epa.gov/envirofacts/ghg/search>`_
+greenhouse gas emissions data to derive facility combustion energy use.
 
 This page serves as a guide to those datasets and their use. The datasets are presented in chronological order and each is referred to by its respository name. In addition to a link to the dataset itself, links are also provided to associated Github repositories and known publications that have used each dataset.
 
