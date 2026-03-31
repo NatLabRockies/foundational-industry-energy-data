@@ -15,11 +15,6 @@ author = 'NREL: Colin McMillan and Carrie Schoeneberger'
 release = get_version("fied").split("+")[0]
 version = ".".join(release.split(".")[:2])
 
-#-- Path setup --------------------------------------------------------------
-import os
-import sys
-sys.path.insert(0, os.path.abspath('../../'))
-
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
