@@ -3,13 +3,17 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+from importlib.metadata import version as get_version
+
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'The Foundational Industry Energy Dataset (FIED)'
 copyright = '2024, Alliance for Sustainable Energy, LLC'
 author = 'NREL: Colin McMillan and Carrie Schoeneberger'
-release = '0.1'
+
+release = get_version("fied").split("+")[0]
+version = ".".join(release.split(".")[:2])
 
 #-- Path setup --------------------------------------------------------------
 import os
