@@ -105,14 +105,6 @@ Depending on the estimation approach, a unit may have a single estimate of energ
 * `fuelTypeStd`: combusted fuel type, standardized.
 * `energyEstimateSource`: source of underlying data used to make energy estimate. Some energy values are provided directly by GHGRP data.
 
-### Greenhouse Gas (GHG) Emissions
-
-* `ghgsTonneCO2e`: GHG emissions estimate (or reported data) in metric tonnes CO2 equivalents.
-* `ghgsTonneCO2eQ0`: minimum of GHG emissions estimate in metric tonnes CO2 equivalents.
-* `ghgsTonneCO2eQ2`: median  GHG emissions estimate in metric tonnes CO2 equivalents.
-* `ghgsTonneCO2eQ2`: upper quartile of GHG emissions estimate in metric tonnes CO2 equivalents.
-* `ghgsEstimateSource`: source of underlying data used to make energy estimate. GHGRP emissions data are used directly, as are some NEI data.
-
 ### Other
 
 We've attempted to include additional descriptive fields where possible. These tend to be sparsely populated at this time.
@@ -120,6 +112,5 @@ We've attempted to include additional descriptive fields where possible. These t
 * `hucCode8`: Hydrolic Unit Code. Not currently implemented.
 * `weeklyOpHours`: Average weekly operating hours by quarter, including 95% confidence interval ranges.
 * `sensitiveInd`: Indicates whether or not the associated data is enforcement sensitive.
-* `envJusticeCode`: The code that identifies the type of environmental justice concern affecting the facility or enforcement action.
 * `smallBusInd`: Code indicating whether or not a business is requesting relief under EPA’s Small Business Policy, which applies to businesses having less than 100 employees.
 * `througputTonne`: Estimated mass throughput.
