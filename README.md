@@ -19,7 +19,7 @@ An older version of this procedure required a manual download of each dataset, b
 
 ### Installation
 
-To prepare your environment to compile the FIED, please follow the instructions in INSTALL.md .
+To prepare your environment to compile the FIED, please follow the instructions in [INSTALL.md](./INSTALL.md).
 
 ## Compiling the FIED
 
