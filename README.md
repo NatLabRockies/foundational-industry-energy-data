@@ -32,8 +32,8 @@ For instance, from the terminal, you can run:
 fied --vintage=2020
 ```
 
-Note that old versions of the FIED package required manual data download,
-which is not required anymore.
+That will orchestrate the full data pipeline, including accessing the extenal
+public data. We currently support the vintages 2017 and 2020.
 
 ## Directory Navigation
 
