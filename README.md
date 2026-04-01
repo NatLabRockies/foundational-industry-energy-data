@@ -11,31 +11,11 @@ The FIED, and the accompanying technical report, can be downloaded from its [Ope
 
 ## Getting Started
 
-### Manual Data Downloads
+### Required Data
 
-Due to the nature of how they are provided, several data sets must be manually downloaded before the code can be run sucessfully. These data sets and their director locations are:
-
-1. Source Classification Codes (SCCs)
-
-    * Download from <https://sor-scc-api.epa.gov/sccwebservices/sccsearch/>
-
-    * Save to `data/SCC/SCCDownload.csv`
-
-2. 2017 National Emissions Inventory (NEI)
-
-    * Download from <https://gaftp.epa.gov/air/nei/2017/data_summaries/2017v1/2017neiJan_facility_process_byregions.zip>
-
-    * Save **and unzip** data to `data/NEI/`.
-
-    * `nei_EF_calculations.py` will format and combine the unzipped csv files into `nei_ind_data.csv`
-  
-3. GHGRP Emissions by Unit and Fuel Type
-
-    * Download from <https://www.epa.gov/system/files/other-files/2022-10/emissions_by_unit_and_fuel_type_c_d_aa_10_2022.zip>
-
-    * Save to `data/GHGRP/`
-
-    * `ghgrp_fac_unit.py` will unzip and format these data.
+All the required data are downlaoded and managed automatically, which includes
+a local cache so each dataset is downloaded only once and stored locally.
+An older version of this procedure required a manual download of each dataset, but that is not required anymore.
 
 ### Installation
 
