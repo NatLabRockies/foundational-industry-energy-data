@@ -5,41 +5,21 @@ industrial energy analysis and modeling.
 
 ## Summary
 
-This is an effort by the National Renewable Energy Laboratory (NREL) and Argonne National Laboratory (ANL) to create an experimental foundational industry dataset for energy and emissions analysis and modeling. The code draws from various publicly-available data, primarily from the U.S. EPA, to compile a data set on unit-level energy use and characterization for U.S. industrial facilities in 2017.
+This is an effort by the National Laboratory of the Rockies (NLR) and Argonne National Laboratory (ANL) to create an experimental foundational industry dataset for energy and emissions analysis and modeling. The code draws from various publicly-available data, primarily from the U.S. EPA, to compile a data set on unit-level energy use and characterization for U.S. industrial facilities in 2017 and 2020.
 
 The FIED, and the accompanying technical report, can be downloaded from its [Open Energy Data Initiative submission](https://doi.org/10.25984/2437657).
 
 ## Getting Started
 
-### Manual Data Downloads
+### Required Data
 
-Due to the nature of how they are provided, several data sets must be manually downloaded before the code can be run sucessfully. These data sets and their director locations are:
-
-1. Source Classification Codes (SCCs)
-
-    * Download from <https://sor-scc-api.epa.gov/sccwebservices/sccsearch/>
-
-    * Save to `data/SCC/SCCDownload.csv`
-
-2. 2017 National Emissions Inventory (NEI)
-
-    * Download from <https://gaftp.epa.gov/air/nei/2017/data_summaries/2017v1/2017neiJan_facility_process_byregions.zip>
-
-    * Save **and unzip** data to `data/NEI/`.
-
-    * `nei_EF_calculations.py` will format and combine the unzipped csv files into `nei_ind_data.csv`
-  
-3. GHGRP Emissions by Unit and Fuel Type
-
-    * Download from <https://www.epa.gov/system/files/other-files/2022-10/emissions_by_unit_and_fuel_type_c_d_aa_10_2022.zip>
-
-    * Save to `data/GHGRP/`
-
-    * `ghgrp_fac_unit.py` will unzip and format these data.
+All the required data are downloaded and managed automatically, which includes
+a local cache so each dataset is downloaded only once and stored locally.
+An older version of this procedure required a manual download of each dataset, but that is not required anymore.
 
 ### Installation
 
-To prepare your environment to compile the FIED, please follow the instructions in INSTALL.md .
+To prepare your environment to compile the FIED, please follow the instructions in [INSTALL.md](./INSTALL.md).
 
 ## Compiling the FIED
 
@@ -52,24 +32,8 @@ For instance, from the terminal, you can run:
 fied --vintage=2020
 ```
 
-Note that old versions of the FIED package required manual data download,
-which is not required anymore.
-
-## Directory Navigation
-
-The underlying submodules and data are organized as follows:
-
-* [analysis](/analysis/): Methods for analyzing and generating figures of the final dataset.
-* [data](/data/): Most folders are created locally for organizing raw data. Contains a [directory list](/data/dir_structure.md).
-* [energy](/energy/): Not currently used. For future estimation of facility energy use based on alternative approaches. 
-* [frs](/frs): Methods for downloading and formatting EPA Facility Registry Service data.
-* [geocoder](/geocoder/): Methods for collecting missing geographical information for facilities.
-* [ghgrp](/ghgrp/): Methods for estimating energy use from GHG emissions reported under EPA's Greenhouse Gas Reporting Program. Based on previous projects, such as the [Industry Energy Data Book](https://github.com/NREL/Industry-energy-data-book).
-* [nei](/nei/): Methods for downloading and formatting data from EPA's National Emissions Inventory and for using these data to characterize combustion units.
-* [qpc](/qpc/): Methods for downloading and formatting operating hours reported under the Census Bureau's Quaterly Survey of Plant Capacity Utlization.
-* [scc](/scc/):  Methods to download and apply EPA's Source Classification Codes for characterizing units.
-* [tests](/tests/): Testing. Currently very limited.
-* [tools](/tools/): Methods that act as various tools used across submodules.
+That will orchestrate the full data pipeline, including accessing the external
+public data. We currently support the vintages 2017 and 2020.
 
 ## Overivew of FIED Data Fields
 
@@ -125,14 +89,6 @@ Depending on the estimation approach, a unit may have a single estimate of energ
 * `fuelTypeStd`: combusted fuel type, standardized.
 * `energyEstimateSource`: source of underlying data used to make energy estimate. Some energy values are provided directly by GHGRP data.
 
-### Greenhouse Gas (GHG) Emissions
-
-* `ghgsTonneCO2e`: GHG emissions estimate (or reported data) in metric tonnes CO2 equivalents.
-* `ghgsTonneCO2eQ0`: minimum of GHG emissions estimate in metric tonnes CO2 equivalents.
-* `ghgsTonneCO2eQ2`: median  GHG emissions estimate in metric tonnes CO2 equivalents.
-* `ghgsTonneCO2eQ2`: upper quartile of GHG emissions estimate in metric tonnes CO2 equivalents.
-* `ghgsEstimateSource`: source of underlying data used to make energy estimate. GHGRP emissions data are used directly, as are some NEI data.
-
 ### Other
 
 We've attempted to include additional descriptive fields where possible. These tend to be sparsely populated at this time.
@@ -140,6 +96,5 @@ We've attempted to include additional descriptive fields where possible. These t
 * `hucCode8`: Hydrolic Unit Code. Not currently implemented.
 * `weeklyOpHours`: Average weekly operating hours by quarter, including 95% confidence interval ranges.
 * `sensitiveInd`: Indicates whether or not the associated data is enforcement sensitive.
-* `envJusticeCode`: The code that identifies the type of environmental justice concern affecting the facility or enforcement action.
 * `smallBusInd`: Code indicating whether or not a business is requesting relief under EPA’s Small Business Policy, which applies to businesses having less than 100 employees.
 * `througputTonne`: Estimated mass throughput.
