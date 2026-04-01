@@ -13,7 +13,7 @@ The FIED, and the accompanying technical report, can be downloaded from its [Ope
 
 ### Required Data
 
-All the required data are downlaoded and managed automatically, which includes
+All the required data are downloaded and managed automatically, which includes
 a local cache so each dataset is downloaded only once and stored locally.
 An older version of this procedure required a manual download of each dataset, but that is not required anymore.
 
