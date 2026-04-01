@@ -32,7 +32,7 @@ For instance, from the terminal, you can run:
 fied --vintage=2020
 ```
 
-That will orchestrate the full data pipeline, including accessing the extenal
+That will orchestrate the full data pipeline, including accessing the external
 public data. We currently support the vintages 2017 and 2020.
 
 ## Overivew of FIED Data Fields
