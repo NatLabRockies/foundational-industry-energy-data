@@ -213,8 +213,7 @@ class GHGRP(FiedGIS, TierEnergy):
         Paramers
         --------
         ffile : pandas.DataFrame or str
-            DataFrame or path string of 2010 faciliy data to format
-        and correct.
+            DataFrame or path string of 2010 faciliy data to format and correct.
 
         Returns
         -------
@@ -352,8 +351,7 @@ class GHGRP(FiedGIS, TierEnergy):
 
         Paramters
         ---------
-        subpart : str; {'subpartC', 'subpartD', 'subpartV_fac', 'subpartV_emis',
-                        'subpartAA_ff', or 'subpartAA_liq'}
+        subpart : str; {'subpartC', 'subpartD', 'subpartV_fac', 'subpartV_emis', 'subpartAA_ff', or 'subpartAA_liq'}
             Name of GHGRP subpart.
 
         filename : str
