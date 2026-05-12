@@ -9,8 +9,8 @@ from importlib.metadata import version as get_version
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'The Foundational Industry Energy Dataset (FIED)'
-copyright = '2024, Alliance for Sustainable Energy, LLC'
-author = 'NREL: Colin McMillan and Carrie Schoeneberger'
+copyright = '2026, Alliance for Energy Innovation, LLC'
+author = 'NLR: Colin McMillan and Carrie Schoeneberger'
 
 release = get_version("fied").split("+")[0]
 version = ".".join(release.split(".")[:2])
