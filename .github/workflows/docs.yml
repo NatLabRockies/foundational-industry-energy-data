@@ -37,7 +37,9 @@ jobs:
           environments: doc
 
       - name: Build HTML docs
-        run: pixi run -e doc python-docs  # treats warnings as errors
+        run: |
+          pixi reinstall -e doc fied
+          pixi run -e doc python-docs  # treats warnings as errors
 
       - name: Setup Pages
         uses: actions/configure-pages@v6
