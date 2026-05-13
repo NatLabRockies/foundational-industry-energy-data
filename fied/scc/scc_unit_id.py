@@ -51,7 +51,7 @@ class SCC_ID:
 
         """
 
-        all_scc = datasets.fetch_scc()
+        all_scc = datasets.fetch_scc().collect().to_pandas()
 
         all_scc.columns = [c.replace(' ', '_') for c in all_scc.columns]
 
