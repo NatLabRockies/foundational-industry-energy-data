@@ -294,91 +294,117 @@ def id_chemical_evaporation(scc: pl.LazyFrame) -> pl.LazyFrame:
         with added columns: ``unit_type_lv1``, ``unit_type_lv2``,
         ``fuel_type_lv1``, ``fuel_type_lv2``.
     """
-
     _LV2 = pl.col("scc_level_two")
     _LV3 = pl.col("scc_level_three")
     _LV4 = pl.col("scc_level_four")
 
-    # ── Condition expressions (evaluated in priority order) ──────
-    is_dryer = _LV4.str.to_lowercase().str.contains("dryer|drying")
-    is_oven_gen = _LV3 == "Coating Oven - General"
-    has_angle_bracket = _LV4.str.contains(r"[<>]")
-    is_oven_heater = _LV3 == "Coating Oven Heater"
-    is_ffe_surface = (_LV3 == "Fuel Fired Equipment") & (_LV2 == "Surface Coating Operations")
-    is_ffe_organic = (_LV3 == "Fuel Fired Equipment") & (_LV2 == "Organic Solvent Evaporation")
+    base = scc.filter(
+        (pl.col("scc_level_one") == "Chemical Evaporation")
+        & _LV2.is_in([
+            "Printing/Publishing",
+            "Surface Coating Operations",
+            "Organic Solvent Evaporation",
+        ])
+    )
+
+    # -- Subset 1: Dryer ----
+    dryer_subset = (
+        base
+        .filter(
+            (_LV2 == "Surface Coating Operations")
+            & _LV4.str.to_lowercase().str.contains("dryer|drying")
+        )
+        .with_columns(
+            pl.lit("Dryer").alias("unit_type_lv1"),
+            _LV4.alias("unit_type_lv2"),
+            pl.lit(None, dtype=pl.Utf8).alias("_fuel_key"),
+        )
+    )
+
+    # -- Subset 2: Coating Oven - General ----
+    oven_gen_subset = (
+        base
+        .filter(_LV3 == "Coating Oven - General")
+        .with_columns(
+            pl.lit("Oven").alias("unit_type_lv1"),
+            pl.when(_LV4.str.contains(r"[<>]"))
+            .then(pl.lit("Coating Oven"))
+            .otherwise(_LV4)
+            .alias("unit_type_lv2"),
+            pl.lit(None, dtype=pl.Utf8).alias("_fuel_key"),
+        )
+    )
+
+    # -- Subset 3: Coating Oven Heater ----
+    oven_heater_subset = (
+        base
+        .filter(_LV3 == "Coating Oven Heater")
+        .with_columns(
+            pl.lit("Heater").alias("unit_type_lv1"),
+            pl.lit("Coating oven heater").alias("unit_type_lv2"),
+            _LV4.alias("_fuel_key"),
+        )
+    )
+
+    # -- Subsets 4 & 5: Fuel Fired Equipment ----
+    ffe_base = base.filter(_LV3 == "Fuel Fired Equipment")
+
+    # ---- Surface Coating
+    ffe_surface_subset = (
+        ffe_base
+        .filter(_LV2 == "Surface Coating Operations")
+        .with_columns(
+            pl.lit("Other").alias("unit_type_lv1"),
+            _LV4.str.split(": ").list.last().alias("unit_type_lv2"),
+            _LV4.str.split(": ").list.first().alias("_fuel_key"),
+        )
+    )
+
+    # ---- Organic Solvent Evaporation
+    ffe_organic_subset = (
+        ffe_base
+        .filter(_LV2 == "Organic Solvent Evaporation")
+        .with_columns(
+            pl.lit("Other combustion").alias("unit_type_lv1"),
+            _LV4.str.split(": ").list.first().alias("unit_type_lv2"),
+            _LV4.str.split(": ").list.last().alias("_fuel_key"),
+        )
+    )
 
     return (
-        scc
-        .filter(
-            (pl.col("scc_level_one") == "Chemical Evaporation")
-            & _LV2.is_in([
-                "Printing/Publishing",
-                "Surface Coating Operations",
-                "Organic Solvent Evaporation",
-            ])
+        # -- Concatenate all subsets ----
+        pl.concat(
+            [
+                dryer_subset,
+                oven_gen_subset,
+                oven_heater_subset,
+                ffe_surface_subset,
+                ffe_organic_subset,
+            ],
+            how="vertical",
         )
-        # -- Unit types ----
-        .with_columns(
-            pl.when(is_dryer)
-            .then(pl.struct(
-                unit_type_lv1=pl.lit("Dryer"),
-                unit_type_lv2=_LV4,
-            ))
-            .when(is_oven_gen & has_angle_bracket)
-            .then(pl.struct(
-                unit_type_lv1=pl.lit("Oven"),
-                unit_type_lv2=pl.lit("Coating Oven"),
-            ))
-            .when(is_oven_gen)
-            .then(pl.struct(
-                unit_type_lv1=pl.lit("Oven"),
-                unit_type_lv2=_LV4,
-            ))
-            .when(is_oven_heater)
-            .then(pl.struct(
-                unit_type_lv1=pl.lit("Heater"),
-                unit_type_lv2=pl.lit("Coating oven heater"),
-            ))
-            .when(is_ffe_surface)
-            .then(pl.struct(
-                unit_type_lv1=pl.lit("Other"),
-                unit_type_lv2=_LV4.str.split(": ").list.last(),
-            ))
-            .when(is_ffe_organic)
-            .then(pl.struct(
-                unit_type_lv1=pl.lit("Other combustion"),
-                unit_type_lv2=_LV4.str.split(": ").list.first(),
-            ))
-            .alias("_unit_types"),
-        )
-        .unnest("_unit_types")
-        # -- Fuel types ----
-        .with_columns(
-            pl.when(is_oven_heater)
-            .then(_LV4)
-            .when(is_ffe_surface)
-            .then(_LV4.str.split(": ").list.first())
-            .when(is_ffe_organic)
-            .then(_LV4.str.split(": ").list.last())
-            .otherwise(pl.lit(None, dtype=pl.Utf8))
-            .alias("_fuel_key"),
-        )
+        # -- Process fuel_type ----
         .pipe(map_fuel_types, fuel_type_col="_fuel_key")
-        # .unnest("_fuel_types")
-        # Null out fuel for rows where no fuel key was derived
-        # Should this logic be in map_fuel_types?
+        # map_fuel_types defaults unmatched fuel keys to "Other", which is
+        # wrong for rows where no fuel was meant to be derived. Explicitly
+        # null those out where _fuel_key is null.
         .with_columns(
-            pl.when(pl.col("_fuel_key").is_not_null())
-            .then(pl.col("fuel_type_lv1"))
+            pl.when(pl.col("_fuel_key").is_null())
+            .then(pl.lit(None, dtype=pl.Utf8))
+            .otherwise(pl.col("fuel_type_lv1"))
             .alias("fuel_type_lv1"),
-            pl.when(pl.col("_fuel_key").is_not_null())
-            .then(pl.col("fuel_type_lv2"))
+            pl.when(pl.col("_fuel_key").is_null())
+            .then(pl.lit(None, dtype=pl.Utf8))
+            .otherwise(pl.col("fuel_type_lv2"))
             .alias("fuel_type_lv2"),
         )
         .drop("_fuel_key")
+        # -- Filter out rows without any result ---
         .filter(
             pl.col("unit_type_lv1").is_not_null()
-            | pl.col("unit_type_lv1").is_not_null()
+            | pl.col("unit_type_lv2").is_not_null()
+            | pl.col("fuel_type_lv1").is_not_null()
+            | pl.col("fuel_type_lv2").is_not_null()
         )
     ).collect().to_pandas().set_index("index")
 
