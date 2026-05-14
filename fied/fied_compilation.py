@@ -12,7 +12,6 @@ import numpy as np
 from fied.tools.naics_matcher import naics_matcher
 from fied.tools.misc_tools import FRS_API
 from fied.tools.misc_tools import Tools
-from fied.scc.scc_unit_id import SCC_ID
 from fied.ghgrp import run_GHGRP
 from fied.ghgrp.ghgrp_fac_unit import GHGRP_unit_char
 from fied.nei.nei_EF_calculations import NEI
@@ -1271,7 +1270,6 @@ def save_final_data(final_data, year, fpath=None, fformat='csv', comp='gzip'):
 
 def doit(year: int = 2017):
 
-    SCC_ID().main()
     fiedgis = FiedGIS()
     unit_regex = Tools().unit_regex
 

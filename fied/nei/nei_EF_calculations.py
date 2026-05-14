@@ -11,6 +11,7 @@ from io import BytesIO
 from pathlib import Path
 toolspath = str(Path(__file__).parents[1]/"tools")
 sys.path.append(toolspath)
+from fied.scc import scc_unit_and_fuel_types
 from fied.tools.misc_tools import Tools
 
 from fied.datasets import fetch_nei_2017, fetch_nei_2020, fetch_webfirefactors
@@ -43,8 +44,6 @@ class NEI:
 
         with open(self._unit_conv_path) as file:
             self._unit_conv = yaml.load(file, Loader=yaml.SafeLoader)
-
-        self._scc_units_path = Path(self._FIEDPATH, "scc/iden_scc.csv")
 
         self._data_source = 'NEI'
 
@@ -515,21 +514,21 @@ class NEI:
         -------
         iden_scc : pandas.DataFrame
             SCC codes with identified unit types and fuel types.
-
         """
+        iden_scc = scc_unit_and_fuel_types()
 
-        iden_scc = pd.read_csv(self._scc_units_path, index_col=0)
-        iden_scc.reset_index(drop=True, inplace=True)
-
-        iden_scc.loc[:, 'SCC'] = iden_scc.SCC.astype('int64')
-
-        iden_scc.rename(columns={
-            'unit_type': 'scc_unit_type',
-            'fuel_type': 'scc_fuel_type'}, inplace=True
-            )
+        iden_scc.rename(
+            mapping={
+                'unit_type_lv1': 'scc_unit_type_lv1',
+                'unit_type_lv2': 'scc_unit_type_lv2',
+                'fuel_type_lv1': 'scc_fuel_type_lv1',
+                'fuel_type_lv2': 'scc_fuel_type_lv2',
+            }
+        )
 
         return iden_scc
-    
+
+
     def extract_ghg_emissions(self, nei_data):
         """
         Capture GHG emissions (i.e., CO2, CH4, N2O)
@@ -1854,7 +1853,10 @@ class NEI:
         nei_char = nei.match_webfire_to_nei(nei_data, webfr)
         self.logger.info("Merging SCC data...")
         self.logger.info("Assigning unit and fuel types...")
-        nei_char = nei.assign_types(nei_char, iden_scc)
+        nei_char = nei.assign_types(
+            nei_char,
+            iden_scc.collect().to_pandas()
+        )
         # nei_char = nei.remove_unit_types(nei_char)  # remove some non-combustion related unit types
         self.logger.info("Finding emission factor outliers...")
         nei_char = nei.detect_and_fix_ef_outliers(nei_char)
