@@ -72,6 +72,7 @@ fied = { path = ".", editable = true }
 [tool.pixi.feature.doc.tasks]
 # build-doc = { cmd = "make clean html", cwd = "docs", env = { SPHINXOPTS = "--fail-on-warning --keep-going" } }
 build-doc = { cmd = "make clean html", cwd = "docs", env = { SPHINXOPTS = "--keep-going" } }
+build-pdf = { cmd = "make latexpdf", cwd = "docs" }
 
 [tool.pixi.dependencies]
 python = "~=3.9.0"
