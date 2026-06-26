@@ -23,7 +23,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
-    'sphinx.ext.githubpages',
+    'sphinx.ext.githubpages', # Adds .nojekyll, useful for branch deploy
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     "sphinx.ext.mathjax",
@@ -37,37 +37,37 @@ source_suffix = {
 
 templates_path = ['_templates']
 exclude_patterns = [
-    "**.ipynb_checkpoints",
-    "**__pycache__**",
-    "**/includes/**"
+    "**/.ipynb_checkpoints/",
+    "**/__pycache__/**",
+    "**/includes/**",
+    "**/_build/**",
+    "**/.DS_Store/**",
 ]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
+# Move to pydata_sphinx_theme
 html_theme = 'press'
 html_static_path = ['_static']
 
 # -- Extension configuration -------------------------------------------------
 
-# -- Autodoc configuration --
+# -- Autodoc & Autosummary configuration --
 add_module_names = False  # Remove namespaces from class/method signatures
 autoclass_content = "both"  # Add __init__ doc (ie. params) to class summaries
 autodoc_inherit_docstrings = True  # If no docstring, inherit from base class
 autodoc_typehints = "none"
+autosummary_generate = True                   # Auto-generate stub pages
+autosummary_generate_overwrite = True         # Regenerate stubs on every build
+autosummary_imported_members = False          # Skip re-exported names
 
-autodoc_type_aliases = {
-    "pd.DataFrame": "pandas.DataFrame",
-    "pd.Series": "pandas.Series",
-    "np.ndarray": "numpy.ndarray",
-    "np.array": "numpy.ndarray",
-    "pl.DataFrame": "polars.DataFrame",
-    "pl.LazyFrame": "polars.LazyFrame",
+autodoc_default_options = {
+    "members": True,
+    "inherited-members": True,
+    "show-inheritance": True,
+    "member-order": "bysource", # Keep methods in source-code order
 }
-
-# -- Autosummary configuration --
-autosummary_generate = True
-autodoc_member_order = "bysource"   # Keep methods in source-code order
 
 # -- BibTeX configuration --
 bibtex_bibfiles = ["references.bib"]
@@ -84,9 +84,11 @@ intersphinx_mapping = {
     "polars": ("https://docs.pola.rs/api/python/stable/", None),
 }
 tls_verify = False
+# linkcheck_anchors_ignore
+# linkcheck_ignore
 
 # -- Napoleon configuration --
-#napoleon_google_docstring = True
+napoleon_google_docstring = False
 napoleon_numpy_docstring = True
 #napoleon_include_init_with_doc = False
 #napoleon_include_private_with_doc = False
@@ -98,7 +100,15 @@ napoleon_numpy_docstring = True
 #napoleon_use_param = True
 napoleon_use_rtype = True
 #napoleon_preprocess_types = False
-#napoleon_type_aliases = None
+napoleon_type_aliases = {
+    "pd.DataFrame": "pandas.DataFrame",
+    "pd.Series": "pandas.Series",
+    "np.ndarray": "numpy.ndarray",
+    "np.array": "numpy.ndarray",
+    "pl.DataFrame": "polars.DataFrame",
+    "pl.LazyFrame": "polars.LazyFrame",
+}
+
 #napoleon_attr_annotations = True
 
 # -- Suppress cross-reference warnings for unresolvable types --
