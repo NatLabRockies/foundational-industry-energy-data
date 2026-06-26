@@ -7,6 +7,7 @@ SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = source
 BUILDDIR      = build
+CLEAN_TARGETS = $(BUILDDIR) $(SOURCEDIR)/_autosummary
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -15,7 +16,6 @@ help:
 clean:
 	rm -rf $(SOURCEDIR)/_autosummary
 	@$(SPHINXBUILD) -M clean "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O);
-	cd build; git worktree add -f html gh-pages
 
 .PHONY: help Makefile
 
