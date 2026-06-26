@@ -1,23 +1,24 @@
-name: Release Documentation
+name: Python Documentation
 
 on:
-  pull_request:
-  push:
-    branches:
-      - main
-    tags:
-      - 'v*.*.*'
-  release:
-    types: [created, published]
+  # pull_request:
+  # push:
+  #   branches:
+  #     - main
+  # release:
+  #   types: [published]
   workflow_dispatch:
 
+concurrency:
+  group: docs-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
-  build_html:
+  build_docs:
     name: Build docs
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pages: write
 
     steps:
       - name: Checkout repository
@@ -26,41 +27,115 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: Setupt Pixi
+      - name: Setup Pixi
         uses: prefix-dev/setup-pixi@5185adfbffb4bd703da3010310260805d89ebb11 # v0.9.6
         with:
-          pixi-version: 'latest'
+          pixi-version: v0.67.2
           locked: true
           cache: true
           cache-write: ${{ github.ref == 'refs/heads/main' }}
           environments: doc
 
-      - name: Build HTML
+      - name: Build HTML docs
         run: |
           pixi reinstall -e doc fied
-          pixi run -e doc build-doc  # This errors on warnings
+          pixi run -e doc python-docs  # treats warnings as errors
 
       - name: Setup Pages
         uses: actions/configure-pages@v6
 
       - name: Upload artifact
+        if: ${{ github.event_name != 'pull_request' }}
         uses: actions/upload-pages-artifact@v5
         with:
-          path: 'docs/build/html'
+          path: docs/_build/html
+          retention-days: 7
 
-  deploy:
-    name: Deploy docs
-    needs: build_html
-    if: startsWith(github.ref, 'refs/tags/v')
+  publish_docs:
+    name: Publish docs to GitHub Pages
+    needs: build_docs
+    if: >-
+      ${{ github.event_name == 'release' ||
+      (github.event_name == 'workflow_dispatch' &&
+      startsWith(github.ref, 'refs/tags/v') &&
+      !contains(github.ref_name, '-')) }}
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      pages: write
-      id-token: write
+      pages: write       # deploy to Pages
+      id-token: write    # verify the deployment came from this workflow
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+
+  build_pdf:
+    name: Build PDF
+    needs: build_docs
+    if: ${{ github.event_name != 'pull_request' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup Pixi
+        uses: prefix-dev/setup-pixi@82d477f15f3a381dbcc8adc1206ce643fe110fb7 # v0.9.3
+        with:
+          pixi-version: v0.67.2
+          locked: true
+          cache: true
+          cache-write: false
+          environments: doc
+
+      - name: Install LaTeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            latexmk \
+            texlive-latex-recommended \
+            texlive-latex-extra \
+            texlive-fonts-recommended \
+            texlive-xetex
+
+      - name: Build PDF docs
+        run: |
+          cd docs
+          make latexpdf
+
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: docs-pdf
+          path: docs/_build/latex/*.pdf
+          if-no-files-found: error
+          retention-days: 7
+
+  publish_pdf:
+    name: Publish PDF to release
+    needs: build_pdf
+    if: ${{ github.event_name == 'release' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download PDF artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: docs-pdf
+          path: pdf
+
+      - name: Attach PDF to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: pdf/**/*.pdf
+          token: ${{ secrets.GITHUB_TOKEN }}

@@ -48,9 +48,9 @@ class FuelUncertainty:
     calculation methodology.
     (Collected for 2014 onwards)
 
-    ------
+    ------------------
     Aggregations (agr)
-    ------
+    ------------------
     'by_fuel': default
     'by_fuel_year': annual fuel
     'by_facility_year': annual fuel by facility
