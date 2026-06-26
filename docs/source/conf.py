@@ -26,6 +26,7 @@ extensions = [
     'sphinx.ext.githubpages',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
+    "sphinx.ext.mathjax",
     "sphinxcontrib.bibtex",
 ]
 
