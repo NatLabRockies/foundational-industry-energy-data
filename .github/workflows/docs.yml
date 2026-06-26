@@ -1,12 +1,12 @@
 name: Python Documentation
 
 on:
-  pull_request:
-  push:
-    branches:
-      - main
-  release:
-    types: [published]
+  # pull_request:
+  # push:
+  #   branches:
+  #     - main
+  # release:
+  #   types: [published]
   workflow_dispatch:
 
 concurrency:
