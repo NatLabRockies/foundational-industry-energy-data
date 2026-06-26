@@ -104,3 +104,39 @@ napoleon_use_rtype = True
 nitpick_ignore_regex = [
     (r"py:class", r"optional"),              # NumPy docstring convention ",     optional"
 ]
+
+# Standalone analysis scripts that execute file I/O or use Py2-style
+# imports at module top level; exclude from recursive autosummary.
+_AUTOSUMMARY_SKIP_MODULES = {
+    "ghgrp_unit_analysis",
+    "nei_emissions_calc_methods",
+    "nei_industrial_sector",
+    "nei_unit_analysis",
+    "scc_describe",
+    "onsite_food",
+    "food_qpc",
+}
+
+
+def _patch_autosummary_module_scan():
+    # Recursive autosummary discovers submodules via pkgutil.iter_modules
+    # in sphinx.ext.autosummary.generate._get_modules, bypassing the
+    # autodoc-skip-member event. Wrap it to drop blocklisted short names.
+    from sphinx.ext.autosummary import generate as _gen
+
+    _original = _gen._get_modules
+
+    def _filtered(obj, **kwargs):
+        public, all_ = _original(obj, **kwargs)
+        public = [m for m in public if m.rsplit(".", 1)[-1] not in _AUTOSUMMARY_SKIP_MODULES]
+        all_ = [m for m in all_ if m.rsplit(".", 1)[-1] not in _AUTOSUMMARY_SKIP_MODULES]
+        return public, all_
+
+    _gen._get_modules = _filtered
+
+
+_patch_autosummary_module_scan()
+
+
+def setup(app):
+    pass
