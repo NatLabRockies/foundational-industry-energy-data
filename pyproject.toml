@@ -1,8 +1,5 @@
 [build-system]
-requires = [
-  "setuptools >= 61",
-  "setuptools_scm[toml] >= 8",
-]
+requires = ["setuptools >= 61", "setuptools_scm[toml] >= 8"]
 build-backend = 'setuptools.build_meta'
 
 [project]
@@ -11,14 +8,12 @@ dynamic = ["version"]
 description = "The Foundational Industry Energy Dataset (FIED) is a unit-level characterization of energy use in the U.S. industrial sector"
 readme = "README.md"
 authors = [
-  {name = "Colin McMillan"},
-  {name = "Gui Castelao", email = "gpimenta@nrel.gov"}
-	]
-maintainers = [
-  {name = "Gui Castelao", email = "gpimenta@nrel.gov"}
-	]
+  { name = "Colin McMillan" },
+  { name = "Gui Castelao", email = "gpimenta@nrel.gov" },
+]
+maintainers = [{ name = "Gui Castelao", email = "gpimenta@nrel.gov" }]
 requires-python = ">= 3.9"
-classifiers=[
+classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Science/Research",
   "Natural Language :: English",
@@ -75,7 +70,7 @@ fied = { path = ".", editable = true }
 [tool.pixi.tasks]
 
 [tool.pixi.feature.doc.tasks]
-build-doc = { cmd = "make clean html", cwd = "docs", env = { SPHINXOPTS = "--fail-on-warning --keep-going --nitpicky" }}
+build-doc = { cmd = "make clean html", cwd = "docs", env = { SPHINXOPTS = "--fail-on-warning --keep-going --nitpicky" } }
 
 [tool.pixi.dependencies]
 python = "~=3.9.0"
@@ -128,7 +123,7 @@ extend-exclude = [
   "fied/energy/IEDB/ag_total.py",
   "fied/energy/IEDB/county_energy_nonmfg.py",
   "fied/energy/IEDB/mining_total.py",
-  ]
+]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -155,7 +150,7 @@ select = [
   # "INP", # flake8-no-pep420
   # "ISC", # flake8-implicit-str-concat
   # "LOG", # flake8-logging
-  "N", # pep8-naming
+  "N",   # pep8-naming
   "NPY", # numpy-specific
   # "PD", # pandas-vet
   # "PERF", # Perflint
@@ -179,14 +174,14 @@ ignore = [
   "ARG001", # unused function argument
   "ARG002", # unused method argument
   "COM812", # missing-trailing-comma (incompatible with formatter)
-  "I001", # isort: imports are incorrectly sorted
-  "N801", # class name should use CapWords convention
-  "N802", # function name should be lowercase
-  "N803", # argument name should be lowercase
-  "N806", # variable in function should be lowercase
-  "N815", # mixedCase variable in class scope
-  "N816", # mixedCase variable in global scope
-  "N999", # invalid module name
+  "I001",   # isort: imports are incorrectly sorted
+  "N801",   # class name should use CapWords convention
+  "N802",   # function name should be lowercase
+  "N803",   # argument name should be lowercase
+  "N806",   # variable in function should be lowercase
+  "N815",   # mixedCase variable in class scope
+  "N816",   # mixedCase variable in global scope
+  "N999",   # invalid module name
 ]
 
 [tool.ruff.lint.pycodestyle]
@@ -206,7 +201,7 @@ packages = ["fied"]
   "EPA_FuelEFs.csv",
   "US_FIPS_Codes.csv",
   "WoodRes_correction_facilities.csv",
-  ]
+]
 
 [tool.setuptools_scm]
 version_file = "fied/_version.py"
