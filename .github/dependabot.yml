@@ -1,12 +1,38 @@
 version: 2
 updates:
-- package-ecosystem: pip
-  directory: "/"
-  schedule:
-    interval: weekly
-  open-pull-requests-limit: 0
+  # Security updates only.
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 0
 
-- package-ecosystem: "github-actions"
-  directory: "/"
-  schedule:
-    interval: weekly
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: tuesday
+    open-pull-requests-limit: 10
+    labels:
+      - "chore"
+      - "dependencies"
+      - "github_actions"
+    cooldown:
+      default-days: 7
+      semver-major-days: 14
+      semver-minor-days: 7
+      semver-patch-days: 3
+      include:
+        - "*"
+    groups:
+      github-actions-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      github-actions-major:
+        patterns:
+          - "*"
+        update-types:
+          - "major"

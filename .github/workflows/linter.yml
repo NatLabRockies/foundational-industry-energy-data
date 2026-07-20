@@ -1,11 +1,14 @@
 name: Lint Code Base
 
 on:
-  push:
-    branches-ignore:
-      - 'gh-pages'
   pull_request:
     branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: lint-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   lint:
@@ -20,7 +23,7 @@ jobs:
           args: check
           src: "./fied"
 
-      # - uses: astral-sh/ruff-action@v3
+      # - uses: astral-sh/ruff-action@4919ec5cf1f49eff0871dbcea0da843445b837e6 # v3.6.1
       #   with:
       #     version: 0.7.4
       #     args: format --check
