@@ -1,11 +1,14 @@
 name: Lint Code Base
 
 on:
-  push:
-    branches-ignore:
-      - 'gh-pages'
   pull_request:
     branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: lint-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   lint:
