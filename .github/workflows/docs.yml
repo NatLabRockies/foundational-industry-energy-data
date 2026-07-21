@@ -30,7 +30,7 @@ jobs:
       - name: Setup Pixi
         uses: prefix-dev/setup-pixi@a09b6247153796b190642a2b53fac4241043cf6f # v0.10.0
         with:
-          pixi-version: v0.67.2
+          pixi-version: v0.73.0
           locked: true
           cache: true
           cache-write: ${{ github.ref == 'refs/heads/main' }}
@@ -90,7 +90,7 @@ jobs:
       - name: Setup Pixi
         uses: prefix-dev/setup-pixi@a09b6247153796b190642a2b53fac4241043cf6f # v0.10.0
         with:
-          pixi-version: v0.67.2
+          pixi-version: v0.73.0
           locked: true
           cache: true
           cache-write: false
