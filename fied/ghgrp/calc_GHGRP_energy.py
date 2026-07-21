@@ -90,7 +90,7 @@ class GHGRP(FiedGIS, TierEnergy):
             Indicates for which reporting years to derive energy estimates.
 
         calc_uncertainty : bool
-            Indicates wether to run uncertainty calculations.
+            Indicates whether to run uncertainty calculations.
 
         fix_county_fips : bool
             Indicates whether to fill missing county FIPS codes. Significantly increases
@@ -210,7 +210,7 @@ class GHGRP(FiedGIS, TierEnergy):
         Reads and formats facility csv file, fixing NAICS codes in 
         2010 GHGRP facility file. 
 
-        Paramers
+        Parameters
         --------
         ffile : pandas.DataFrame or str
             DataFrame or path string of 2010 faciliy data to format and correct.
@@ -298,7 +298,7 @@ class GHGRP(FiedGIS, TierEnergy):
         subsequent years default to the code of the first year a facility
         reports.
 
-        Paramters
+        Parameters
         ---------
         oth_facfile : pandas.DataFrame
 
@@ -349,7 +349,7 @@ class GHGRP(FiedGIS, TierEnergy):
         Method for checking for saved file or calling download method
         for all years in instantiated class.
 
-        Paramters
+        Parameters
         ---------
         subpart : str; {'subpartC', 'subpartD', 'subpartV_fac', 'subpartV_emis', 'subpartAA_ff', or 'subpartAA_liq'}
             Name of GHGRP subpart.
@@ -404,7 +404,7 @@ class GHGRP(FiedGIS, TierEnergy):
         """
         Download EPA data via API if emissions data are not saved locally.
 
-        Paramters
+        Parameters
         ---------
         subpart : str; {'subpartC', 'subpartD', 'subpartV_fac', 'subpartV_emis',
                         'subpartAA_ff', or 'subpartAA_liq'}
@@ -546,7 +546,7 @@ class GHGRP(FiedGIS, TierEnergy):
 
         # Separate, additional correction for facilities appearing to have
         # continued reporting with previous CH4 emission factor for kraft
-        # liqour combusion (now reported as Wood and Wood Residuals
+        # liqour combustion (now reported as Wood and Wood Residuals
         # (dry basis).
         wood_fac_add = [1001892, 1005123, 1006366, 1004396]
 

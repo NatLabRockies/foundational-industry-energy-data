@@ -395,7 +395,7 @@ class TierEnergy:
 
                 # Some facilities reporting Tier 2 emissions may be missing
                 # from the tier 2 hhv table.
-                # Appy standard emission factors for
+                # Apply standard emission factors for
                 # these facilities to estimate energy use.
                 if t2_data_combined.empty:
 
@@ -421,7 +421,7 @@ class TierEnergy:
                                 on='FUEL_TYPE', how='left')
 
                     # Issue: For unknown reason, tier_column is type object,
-                    # thus the sum turns int a contatenation of strings, such as
+                    # thus the sum turns into a concatenation of strings, such as
                     # 0.2186.876.70.324.226.713.40.00.20.40.019.846 ...
                     df[tier_column] = df[tier_column].astype('float')
 
@@ -497,7 +497,7 @@ class TierEnergy:
         tier_column = 'TIER3_CO2_COMBUSTION_EMISSIONS'
 
         ghg_data = self.filter_data(subpart_c_df, tier_column)
-        # Issue: For unknonwn reason, tier_column and TIER3_EQ_C5_FUEL_QTY are
+        # Issue: For unknown reason, tier_column and TIER3_EQ_C5_FUEL_QTY are
         # type object, thus given unexpected result for sum operations.
         ghg_data[tier_column] = ghg_data[tier_column].astype('float')
         ghg_data["TIER3_EQ_C5_FUEL_QTY"] = ghg_data["TIER3_EQ_C5_FUEL_QTY"].astype(float)
@@ -505,7 +505,7 @@ class TierEnergy:
 
         energy = pd.DataFrame()
 
-        # Calculated annual hhv (mass or volumne per mmbtu) by fuel.
+        # Calculated annual hhv (mass or volume per mmbtu) by fuel.
         # Note that reporting for these measurements began in 2014.
         if any(x > 2013 for x in self.years):
 

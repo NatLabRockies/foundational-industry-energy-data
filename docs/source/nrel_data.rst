@@ -8,7 +8,7 @@ resolution of traditional sources of energy data and are linked by their use of
 `EPA Greenhouse Gas Reporting Program (GHGRP) <https://enviro.epa.gov/envirofacts/ghg/search>`_
 greenhouse gas emissions data to derive facility combustion energy use.
 
-This page serves as a guide to those datasets and their use. The datasets are presented in chronological order and each is referred to by its respository name. In addition to a link to the dataset itself, links are also provided to associated Github repositories and known publications that have used each dataset.
+This page serves as a guide to those datasets and their use. The datasets are presented in chronological order and each is referred to by its repository name. In addition to a link to the dataset itself, links are also provided to associated Github repositories and known publications that have used each dataset.
 
 Quick Guide
 ***********

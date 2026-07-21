@@ -3,7 +3,7 @@
 The design decisions and principles.
 I'm just collecting ideas now to organize them later.
 
-## Miscelaneous ideas to be organized
+## Miscellaneous ideas to be organized
 
 Currently, the data pipeline requires manual data download and an expected structure of directories and contents. A better approach would be to:
 - Systemic data download. We know what data we need and where to find it. Some datasets are automatically downloaded, but not all the requirements;

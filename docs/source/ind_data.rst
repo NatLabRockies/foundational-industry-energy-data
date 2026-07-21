@@ -10,7 +10,7 @@ This historical context is described in more detail in an `NLR technical report 
 .. [#mcmillan2024] McMillan, Colin, Carrie Schoeneberger, Sarang Supekar, and David Thierry. “The Foundational Industrial Energy Dataset (FIED): Open-Source Data on Industrial Facilities.” Golden, CO: National Renewable Energy Laboratory (NREL), September 5, 2024. https://doi.org/10.2172/2440617.
 
 .. csv-table:: Summary of Industrial Energy Data Sources
-   :header: "Source", "Data Prodct", "Publication Timeline", "Geographic Resolution", "Industry Resolution", "Fuel Type Disaggregation", "End-Use Disaggregation", "Notes" 
+   :header: "Source", "Data Product", "Publication Timeline", "Geographic Resolution", "Industry Resolution", "Fuel Type Disaggregation", "End-Use Disaggregation", "Notes" 
 
    "EIA",            "`Monthly/Annual Energy Review`_", "Monthly/annually", "National", "None", "Yes", "No", "Comprised of supplier responses from various EIA fuel surveys" 
    "EIA",            "`State Energy Data System (SEDS)`_", "Annual", "None", "Yes", "No", "Comprised of supplier responses to EIA fuel surveys." 

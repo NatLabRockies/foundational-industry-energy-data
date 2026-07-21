@@ -12,7 +12,7 @@ module_logger = logging.getLogger(__name__)
 def fetch_scc():
     """Load EPA's Source Classification Codes (SCC)
 
-    Note that downloading directly from website assignes filename for
+    Note that downloading directly from website assigns filename for
     csv based as 'SCCDownload-{y}-{md}-{t}.csv'
 
     Should force the filename to be 'SCCDownload.csv'?

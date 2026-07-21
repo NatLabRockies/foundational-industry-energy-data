@@ -794,7 +794,7 @@ class Ag:
             ag.calc_county_energy(state_elec, usda_data['farm_counts'])]
             )
 
-        retun county_energy 
+        return county_energy 
 
 if __name__ == '__main__':
 

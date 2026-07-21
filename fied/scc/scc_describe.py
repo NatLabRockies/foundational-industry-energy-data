@@ -223,7 +223,7 @@ def describe_scc_codes(scc_df):
                'scc_fuel_type'] = scc_df.SCC.str[3:6].map(lev_3_ind_blr_CO_dict)
     
     
-    # Fuel types - External Combustion: Commerical boilers
+    # Fuel types - External Combustion: Commercial boilers
     lev3_ind_blr_dict = {'001':'anthracite coal',
                  '002':'bituminous coal',
                  '003':'lignite',

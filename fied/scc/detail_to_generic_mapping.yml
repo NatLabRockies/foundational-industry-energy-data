@@ -406,7 +406,7 @@ unit_types:
 "Slag Cleaning Furnace": "Furnace"
 "Reverberatory Furnace with Converter": "Furnace"
 "Fluid Bed Roaster with Reverberatory Furnace and Converter": "Furnace"
-"Dryer with Electric Furnace and Cleaning Furnace and Convertor": "Furnace"
+"Dryer with Electric Furnace and Cleaning Furnace and Converter": "Furnace"
 "Dryer with Flash Furnace and Converter": "Furnace"
 "Multiple Hearth Roaster with Reverberatory Furnace and Converter": "Furnace"
 "Fluid Bed Roaster with Electric Furnace and Converter": "Electric arc furnace"

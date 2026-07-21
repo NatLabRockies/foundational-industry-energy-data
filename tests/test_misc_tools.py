@@ -25,4 +25,4 @@ def test_api():
     if not any(results):
         errors.append("FRS_API returned all None values")
 
-    assert not errors, "errors occured:\n{}".format("\n".join(errors))
+    assert not errors, "errors occurred:\n{}".format("\n".join(errors))

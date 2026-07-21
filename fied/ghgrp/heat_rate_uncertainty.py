@@ -251,14 +251,14 @@ class FuelUncertainty:
 
     def calc_error_prop_ef(self, tier2_hhv, tier3):
         """
-        Calculate error propogation of carbon content of fuels
+        Calculate error propagation of carbon content of fuels
         (kg CO2/mmBtu)--agregated by fuel, reporting year and fuel, or
         reporting year, fuel, and facility--based on data reported for Tier 2
         and Tier 3 emission calculation approaches.
 
         """
 
-        # Import boostrap data (by year and fuel) for hhv and tier 3 data
+        # Import bootstrap data (by year and fuel) for hhv and tier 3 data
         hhv_boot = pd.read_csv(
             os.path.abspath('../data/GHGRP/hhv_uncertainty.csv'),
             index_col=[0,1]
