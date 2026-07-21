@@ -105,7 +105,8 @@ jobs:
             texlive-latex-extra \
             texlive-fonts-recommended \
             texlive-fonts-extra \
-            texlive-xetex
+            texlive-xetex \
+            xindy
 
       - name: Build PDF docs
         run: |
