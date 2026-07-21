@@ -73,6 +73,7 @@ fied = { path = ".", editable = true }
 # build-doc = { cmd = "make clean html", cwd = "docs", env = { SPHINXOPTS = "--fail-on-warning --keep-going" } }
 build-doc = { cmd = "make clean html", cwd = "docs", env = { SPHINXOPTS = "--keep-going" } }
 build-pdf = { cmd = "make latexpdf", cwd = "docs" }
+codespell = "codespell"
 
 [tool.pixi.dependencies]
 python = "~=3.9.0"
@@ -115,6 +116,7 @@ make = ">=4.4.1,<5"
 sphinx = ">=7.4.7,<8"
 myst-parser = ">=3.0.1,<4"
 sphinxcontrib-bibtex = ">=2.6.5,<3"
+codespell = ">=2.3,<3"
 
 [tool.pixi.feature.test.dependencies]
 pytest = "~=7.4.0"
@@ -193,6 +195,22 @@ max-doc-length = 72
 convention = "numpy"
 
 [tool.ruff.lint.per-file-ignores]
+
+[tool.codespell]
+# Paths / glob patterns to skip. Comma-separated string (codespell CLI format).
+# Directory skips need a trailing wildcard so fnmatch matches nested paths.
+skip = "./.git,./.pixi,./docs/build,./docs/build/*,./docs/source/_build,./docs/source/_build/*,./*.egg-info,./*.egg-info/*,pixi.lock,*.bib,*.csv,*.svg,*.png,*.jpg,*.jpeg,*.pdf,*.xls,*.xlsx,*.xlsm,*.xlsb,*.zip,*.parquet,*.ipynb_checkpoints"
+# Domain terms and identifiers that codespell would otherwise flag.
+# Extend as false positives appear; keep entries lowercase.
+#   fied     - project name
+#   nlr      - National Lab (referenced throughout docs)
+#   ore      - mineral ore (SCC mappings)
+#   trough   - solar / conveyor trough (SCC mappings)
+#   padd     - EIA Petroleum Administration for Defense Districts
+#   thierry  - author surname
+ignore-words-list = "fied,nlr,ore,trough,padd,thierry"
+check-filenames = true
+check-hidden = true
 
 [tool.setuptools]
 include-package-data = true
