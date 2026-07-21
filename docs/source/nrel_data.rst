@@ -72,8 +72,11 @@ is provided for manufacturing agriculture and mining industries).
 Manufacturing Thermal Energy Use in 2014 (2019)
 ***********************************************
 
-Further expansion of the method to derive :ref:`county-level industrial energy estimates <county_data_2018>`, focusing on characterizing indusrial process heat demand. Estimated thermal energy use (i.e., fuels combusted for process heating, boilers, and combined heat and power/cogeneration) by end use, temperature, county, and facility employment size class for all U.S. manufacturing industries in 2014. The estimation methodology builds off of the 
-The Data Catalog entry also includes hourly representative heat load shapes for boilers and generic process heating equipment. These load shapes were used to 
+Further expansion of the method to derive :ref:`county-level industrial energy estimates <county_data_2018>`, focusing on characterizing indusrial process heat demand.
+Estimated thermal energy use (i.e., fuels combusted for process heating, boilers, and combined heat and power/cogeneration) by end use, temperature, county, and facility employment size class for all U.S. manufacturing industries in 2014.
+.. The estimation methodology builds off of the 
+The Data Catalog entry also includes hourly representative heat load shapes for boilers and generic process heating equipment.
+.. These load shapes were used to 
 
 * `Manufacturing Thermal Energy dataset <https://data.nlr.gov/submissions/118>`_
 * `NLR technical report: Opportunities for Solar Industrial Process Heat <https://doi.org/10.2172/1762440>`_
