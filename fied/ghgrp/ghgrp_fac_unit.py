@@ -33,7 +33,7 @@ class GHGRP_unit_char:
         """
         Opens and loads a yaml that specifies the mapping of
         GHGRP fuel types to standard fuel types that have
-        aready been applied to NEI data.
+        already been applied to NEI data.
 
         Returns
         -------
@@ -140,7 +140,7 @@ class GHGRP_unit_char:
             overwrite=True
             )
 
-        # Industrial facilities aleady selected in FRS data.
+        # Industrial facilities already selected in FRS data.
         ghgrp_ind = ghgrp_ind.where(
             ghgrp_ind['Reporting Year'].isin(ghgrp_df.REPORTING_YEAR)
             ).dropna(how='all')
@@ -252,7 +252,7 @@ class GHGRP_unit_char:
 
     def get_unit_type(self):
         """
-        Use unit name to deterimine unit type for
+        Use unit name to determine unit type for
         unit types that are defined as OCS (Other combustion source).
 
 

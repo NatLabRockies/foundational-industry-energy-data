@@ -440,7 +440,7 @@ class FIED_analysis:
         Make stacked bar chart showing units by Sector and
         total number of facilities reporting units
 
-        Paramters
+        Parameters
         ---------
         summary_table : pandas.DataFrame
             Output of `summary_unit_table` method.
@@ -1322,7 +1322,7 @@ class FIED_analysis:
 
     def make_consistent_naics_column(self, final_data, n):
         """
-        Creates a column of consisently aggregated NAICS codes
+        Creates a column of consistently aggregated NAICS codes
         (i.e., same number of digits) when a column of 
         NAICS codes contains different levels of aggregation.
         Will only include 

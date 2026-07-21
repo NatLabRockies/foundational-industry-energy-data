@@ -86,7 +86,7 @@ class CBP:
 
         cbp.naics = cbp.naics.apply(fix_naics)
 
-        # Create concatentated FIPS field to match GHGRP COUNTY_FIPS
+        # Create concatenated FIPS field to match GHGRP COUNTY_FIPS
         def state_fips_str(x):
 
             if len(str(x)) == 1:

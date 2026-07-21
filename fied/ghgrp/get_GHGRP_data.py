@@ -89,7 +89,7 @@ def get_count(table_url):
         row_count = r.json()[0]['TOTALQUERYRESULTS']
 
     except (IndexError, requests.exceptions.JSONDecodeError) as e:
-        module_logger.error(f'Check API respose: {e}\n{r.status_code}')
+        module_logger.error(f'Check API response: {e}\n{r.status_code}')
         sys.exit(1)
 
     t1 = time.time()

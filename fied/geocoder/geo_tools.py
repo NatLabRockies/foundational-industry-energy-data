@@ -174,7 +174,7 @@ def get_blocks_parallelized(df):
     -------
     df : pandas.DataFrame
         Final foundational energy dataframe with
-        new colum for censusBlock
+        new column for censusBlock
 
     """
 
@@ -216,7 +216,7 @@ def get_blocks_parallelized(df):
 #     benchmark : str; default is "2020".
 #         Other available benchmarks: https://geocoding.geo.census.gov/geocoder/benchmarks.
 
-#     vintage : str; default is "2020". Dependant on benchmark.
+#     vintage : str; default is "2020". Dependent on benchmark.
 #         Vintages are based on benchmark; see https://geocoding.geo.census.gov/geocoder/vintages?benchmark=benchmarkId., 
 
 #     Returns

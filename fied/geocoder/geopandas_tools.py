@@ -37,7 +37,7 @@ class FiedGIS:
 
         ftype : str, {'BG', 'CD', 'HUC'}
             Type of file to return. 'BG' == census block groups; 
-            'CD' == congressional districts; 'HUC' == hydrolic unit code.
+            'CD' == congressional districts; 'HUC' == hydraulic unit code.
 
         Returns
         -------
@@ -76,7 +76,7 @@ class FiedGIS:
 
         ftype : str, {'BG', 'CD', 'COUNTY', 'HUC'}
             Type of file to return. 'BG' == census block groups; 
-            'CD' == congressional districts; 'COUNTY' == county FIPS; 'HUC' == hydrolic unit code.
+            'CD' == congressional districts; 'COUNTY' == county FIPS; 'HUC' == hydraulic unit code.
 
         data_source : str, {'fied', 'ghgrp'}
             Source of data with missing geographic identifiers.

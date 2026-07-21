@@ -50,7 +50,7 @@ class FRS_API:
         Returns
         -------
         hucCode : str
-            Hydrolic unit code. Can be [f'HUC_{n}' for n in range(2, 14, 2)]
+            Hydraulic unit code. Can be [f'HUC_{n}' for n in range(2, 14, 2)]
         """
 
         huc_name = {
@@ -103,7 +103,7 @@ class FRS_API:
             API call method
 
         data :
-            Data to pass to mthod
+            Data to pass to method
 
         Returns
         -------
@@ -217,7 +217,7 @@ class FRS_API:
 
         return program_data
 
-    def query_emissions_unit(self, acroynm, id):
+    def query_emissions_unit(self, acronym, id):
         """
 
         Parameters

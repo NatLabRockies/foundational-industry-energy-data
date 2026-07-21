@@ -425,7 +425,7 @@ lignite: coal
 #  - Vertical Furnace
 #  - Electric Arc Melt Furnace
 #  - Electric Furnace (Wool-type Fiber)
-#  - furance
+#  - furnace
 #  - CF (Cyclone Furnace)
 #  - Chemical Recovery Furnace
 #  - F (Furnace)
@@ -476,7 +476,7 @@ lignite: coal
 #  - Slag Cleaning Furnace
 #  - Reverberatory Furnace with Converter
 #  - Fluid Bed Roaster with Reverberatory Furnace and Converter
-#  - Dryer with Electric Furnace and Cleaning Furnace and Convertor
+#  - Dryer with Electric Furnace and Cleaning Furnace and Converter
 #  - Dryer with Flash Furnace and Converter
 #  - Multiple Hearth Roaster with Reverberatory Furnace and Converter
 #  - Fluid Bed Roaster with Electric Furnace and Converter
@@ -1305,7 +1305,7 @@ lignite: coal
 
 # By-product Process: Combustion Stack: Coke Oven Gas (COG)
 # By-product Process: Combustion Stack: Blast Furnace Gas (BFG)
-# By-product Process: By-pass Bleeder Stack/Excess Coke Oven Gas Vent
+# By-product Process: Bypass Bleeder Stack/Excess Coke Oven Gas Vent
 # Heat/No Chemical Recovery Process: Oven Charging
 # Nonrecovery Process: Oven Charging
 # Reverberatory Smelting Furnace after Roaster

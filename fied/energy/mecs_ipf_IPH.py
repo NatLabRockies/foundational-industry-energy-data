@@ -1,7 +1,7 @@
 """
 Created on Fri Jan 13 13:45:19 2017
 @author: ookie
-Modified on Thur Feb 9 16:09:00 2017 by colin
+Modified on Thu Feb 9 16:09:00 2017 by colin
 """
 
 import numpy as np

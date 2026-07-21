@@ -185,7 +185,7 @@ FIED
   - hucCode8
     - dtype: float
     - description: >
-       Hydrolic Unit Code (HUC) from the USGS. Accoring to the USGS, hydrologic unitsare classified 
+       Hydraulic Unit Code (HUC) from the USGS. According to the USGS, hydrologic unitsare classified 
        into four levels: regions, sub-regions, accounting units, and cataloging units. 
        Each unit is identified by a unique hydrologic unit code (HUC) consisting of two to 
        eight digits based on its classification.
@@ -297,7 +297,7 @@ FIED
     - dtype: float
     - description: >
          lower bound of 95% confidence interval for average 
-         weekly operating hours thrid quarter. Calculated using reported data.
+         weekly operating hours third quarter. Calculated using reported data.
     - source: <a href="https://www.census.gov/programs-surveys/qpc.html"> Census QPC </a>
 - weeklyOpHoursLow_q4
     - dtype: float

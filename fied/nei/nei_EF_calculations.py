@@ -838,7 +838,7 @@ class NEI:
         Finds emission factors (EFs) that are 1.5 * interquartile range 
         beyond the first and third quartiles by SCC, pollutant code, 
         and fuel type.
-        EFs that are identiied as outliers are augemented with the 
+        EFs that are identified as outliers are augemented with the 
         median value.
 
         Parameters
@@ -850,7 +850,7 @@ class NEI:
         nei_data : pd.DataFrame
             NEI data with new column 'emission_factor_median' that contains the median
             of EFs found to be outliers. These EFs have the same numerator and
-            denominator units and the orginally reported EFs.
+            denominator units and the originally reported EFs.
         """
     
         # nei_ef = nei_data.groupby(
@@ -1113,7 +1113,7 @@ class NEI:
         """
         Assign unit type and fuel type based on NEI and SCC descriptions
 
-        Paramters
+        Parameters
         ---------
         nei : pandas.DataFrame
             Raw NEI data.
@@ -1305,7 +1305,7 @@ class NEI:
         Returns
         -------
         nei : pandas.DataFrame
-            NEI with mass and throughput coversion factors. 
+            NEI with mass and throughput conversion factors. 
     
         """
         #TODO refactor to condense code (many common elements between NEI and
@@ -1582,7 +1582,7 @@ class NEI:
 
         med_unit.reset_index(inplace=True)
 
-        # Remove duplicate eis_unit_ids (a sinlge eis_unit_id may have multiple fuel types)
+        # Remove duplicate eis_unit_ids (a single eis_unit_id may have multiple fuel types)
 
         return med_unit
 
@@ -1644,7 +1644,7 @@ class NEI:
         """
         Opens and loads a yaml that specifies the mapping of
         GHGRP fuel types to standard fuel types that have
-        aready been applied to NEI data.
+        already been applied to NEI data.
 
         Returns
         -------
@@ -1730,9 +1730,9 @@ class NEI:
     def format_nei_char(self, df):
         """"
         Format characterization of NEI data for further processing.
-        Removes uncessary columns from NEI data.
+        Removes unnecessary columns from NEI data.
 
-        Paramters
+        Parameters
         ---------
         df : pandas.DataFrame
             NEI data.
@@ -1808,7 +1808,7 @@ class NEI:
         Returns
         -------
         nei_char : pandas.DataFrame
-            Formatted NEI data with quartile energy and througput estimates. 
+            Formatted NEI data with quartile energy and throughput estimates. 
         """
 
         med_unit.set_index(

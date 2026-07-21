@@ -1,13 +1,16 @@
 Sources of Industrial Energy Data for the United States
 #######################################################
 
-This page provides a brief overview of sources of U.S. industrial energy data, including breif descriptions of their publication timelines and resolution.
+This page provides a brief overview of sources of U.S. industrial energy data, including brief descriptions of their publication timelines and resolution.
 Industrial energy datasets developed by NLR are discussed on a :doc:`separate page </nrel_data>`.
 By and large, most industrial energy data is available for "industry" (an aggregation of `North American Industrial Classification System [NAICS] codes <https://www.census.gov/naics/>`_ for Agriculture [NAICS 11], Mining [NAICS 21], Construction [NAICS 23], and Manufacturing [NAICS 31-33]) or for manufacturing industries. Unlike manufacturing, the non-manufacturing sectors do not have their own EIA end-use survey and energy data collection by other federal agencies is limited.
-The current state of industrial energy data collection and dissemination can be explained by various historical developments. This historical context is summarized in this project :doc:`here </data_history>` and described in more detail in an `NLR technical report <https://www.nlr.gov/docs/fy24osti/90442.pdf>`_.
+The current state of industrial energy data collection and dissemination can be explained by various historical developments.
+This historical context is described in more detail in an `NLR technical report <https://www.nlr.gov/docs/fy24osti/90442.pdf>`_ [#mcmillan2024]_.
+
+.. [#mcmillan2024] McMillan, Colin, Carrie Schoeneberger, Sarang Supekar, and David Thierry. “The Foundational Industrial Energy Dataset (FIED): Open-Source Data on Industrial Facilities.” Golden, CO: National Renewable Energy Laboratory (NREL), September 5, 2024. https://doi.org/10.2172/2440617.
 
 .. csv-table:: Summary of Industrial Energy Data Sources
-   :header: "Source", "Data Prodct", "Publication Timeline", "Geographic Resolution", "Industry Resolution", "Fuel Type Disaggregation", "End-Use Disaggregation", "Notes" 
+   :header: "Source", "Data Product", "Publication Timeline", "Geographic Resolution", "Industry Resolution", "Fuel Type Disaggregation", "End-Use Disaggregation", "Notes" 
 
    "EIA",            "`Monthly/Annual Energy Review`_", "Monthly/annually", "National", "None", "Yes", "No", "Comprised of supplier responses from various EIA fuel surveys" 
    "EIA",            "`State Energy Data System (SEDS)`_", "Annual", "None", "Yes", "No", "Comprised of supplier responses to EIA fuel surveys." 
@@ -81,28 +84,6 @@ The USDA collects a limited amount of energy consumption data for farming operat
 * `USDA National Agricultural Statistics Service <https://quickstats.nass.usda.gov>`_: Expenses from Ag Census (conducted every 5 years) and various surveys. 
 
 The USDA also maintains the `Federal Life Cycle Assessment (LCA) Commons <https://www.lcacommons.gov>`_, a data repository to support LCA.
-
-
-Socioeconomic -- Focused
-************************
-
-An increasing number of data products and associated mapping tools have been developed that bring together the locations industrial facilities with the socioeconomic conditions of their surrounding communities.
-These include, but are not limted to:
-
-* `Corporate Toxics Information Project <https://www.peri.umass.edu/corporate-toxics-information-project/>`_: Datasets linking facility ownership to emissions of air emissions and toxics. Developed by the University of Massachusetts Amherst.
-* `Climate and Economic Screening Tool (CEJST) <https://screeningtool.geoplatform.gov/>`_: Dataset combining indicators of long term variability, energy, health, housing, legacy pollution, transportation, water and wastewater, and workforce development burdens. Developed by the White House Council on Environmental Quality.
-* `Energy Communities IWG Site Review Tool <https://edxspatial.arcgis.netl.doe.gov/experience_builder/IWGSiteReviewTool/index.html>`_: Dataset developed to link information on industrial facility locations, brownfields, infrastructure, and community attributes. Developed by the National Energy Technology Laboratory and DOE.
-* `Employment Vulnerability to the Energy Transition (E-VET) Tool <https://kailingraham.github.io/ecf-vis-tool/>`_: Analysis and dataset identifying communities that may be vulnerable in an energy transition based on their reliance on carbon-intensive industries. Based on 2024 work from `Kailin Graham and Christopher Knittel <https://doi.org/10.1073/pnas.2314773121>`_.
-
-
-
-Other Publicly-Avaialable Data
-******************************
-
-* `U.S. industrial boiler inventory <https://github.com/carriescho/Electrification-of-Boilers>`_: Based on 2022 work from `Schoeneberger et al. <https://doi.org/10.1016/j.adapen.2022.100089>`_. 
-* `Global Steel Plant Tracker (GSPT) <https://globalenergymonitor.org/projects/global-steel-plant-tracker/>`_: Data compiled by `Global Energy Monitor`_ on global steel facilities.  
-* `Global Blast Furnace Tracker (GBFT) <https://globalenergymonitor.org/projects/global-blast-furnace-tracker/>`_: Data compiled by `Global Energy Monitor`_ on global blast furnaces.
-* `Global Cement and Concrete Tracker <https://globalenergymonitor.org/projects/global-cement-and-concrete-tracker/>`_: Scheduled release in July 2025 by `Global Energy Monitor`_. 
 
 
 Private (Proprietary) Sources

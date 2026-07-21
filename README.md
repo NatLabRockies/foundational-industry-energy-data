@@ -93,7 +93,7 @@ Depending on the estimation approach, a unit may have a single estimate of energ
 
 We've attempted to include additional descriptive fields where possible. These tend to be sparsely populated at this time.
 
-* `hucCode8`: Hydrolic Unit Code. Not currently implemented.
+* `hucCode8`: Hydraulic Unit Code. Not currently implemented.
 * `weeklyOpHours`: Average weekly operating hours by quarter, including 95% confidence interval ranges.
 * `sensitiveInd`: Indicates whether or not the associated data is enforcement sensitive.
 * `smallBusInd`: Code indicating whether or not a business is requesting relief under EPA’s Small Business Policy, which applies to businesses having less than 100 employees.

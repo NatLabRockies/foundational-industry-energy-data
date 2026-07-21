@@ -362,7 +362,7 @@ def blend_estimates(nei_data_shared, ghgrp_data_shared):
 
 def id_nei_units_nonocs(nei_data_shared, nei_data_shared_ocs):
     """
-    Identify NEI data for facilites that report to both NEI and GHGRP
+    Identify NEI data for facilities that report to both NEI and GHGRP
     and that report a unit type other than "OCS (Other combustion source)" 
     under GHGRP reporting.
 
@@ -402,7 +402,7 @@ def id_nei_units_nonocs(nei_data_shared, nei_data_shared_ocs):
             ]
         )
 
-    # Reset all of these indicies
+    # Reset all of these indices
     nei_data_shared_nonocs.reset_index(inplace=True)
     nei_data_shared_ocs.reset_index(inplace=True)
     nei_data_shared.reset_index(inplace=True)
@@ -598,7 +598,7 @@ def reconcile_shared_nonocs(nei_data_shared_nonocs, ghgrp_data_shared_nonocs, dt
 
 def id_nei_units_ocs(nei_data_shared, ghgrp_data_shared_ocs):
     """
-    Identify NEI data for facilites that report to both NEI and GHGRP
+    Identify NEI data for facilities that report to both NEI and GHGRP
     and that report a unit type as "OCS (Other combustion source)"
     under GHGRP reporting.
 
@@ -723,7 +723,7 @@ def id_ghgrp_units(ghgrp_data, ocs=True):
 #     Returns
 #     -------
 #     ocs_share : pandas.DataFrame
-#         Share of energy or ghgs by resgistry, fuelTypeStd, and unitTypeStd
+#         Share of energy or ghgs by registry, fuelTypeStd, and unitTypeStd
 #         that is OCS
 #     """
 #     if dt == 'energy':
@@ -825,7 +825,7 @@ def allocate_shared_ocs(ghgrp_data_shared_ocs, nei_data_shared_ocs, dt='energy')
     # ghgrp_dso.to_pickle(f'ghgrp_dso_{dt}.pkl')
     # nei_dso.to_pickle(f'nei_dso_{dt}.pkl')
 
-    # Cleaning up the unecessary 'index' column 
+    # Cleaning up the unnecessary 'index' column 
     # #TODO (minor): find what merge or join is creating this column
     for df in [nei_dso, ghgrp_dso]:
         if 'index' in df.columns:
@@ -1099,7 +1099,7 @@ def merge_qpc_data(final_data, qpc_data):
     match these FRS-provided NAICS to their 6-digit 
     equivalents before merging with QPC data.
 
-    Paramters
+    Parameters
     ---------
     final_data : pandas.DataFrame
         Final foundational data after merging final_energy_data 

@@ -114,7 +114,7 @@ class subpartAA:
 
     def energy_calc(self):
         """
-        Merge resuts of Subpart AA energy calculations into a single dataframe.
+        Merge results of Subpart AA energy calculations into a single dataframe.
         """
 
         energy_AA = pd.concat(

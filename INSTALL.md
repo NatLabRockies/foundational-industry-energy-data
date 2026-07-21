@@ -5,7 +5,7 @@ multiple data sources in a well defined sequence of steps.
 To provide transparency and reproducibility, we organized all the procedures, including obtaining the raw data and the processing steps, in a Python package named [`fied`](https://github.com/NREL/foundational-industry-energy-data). 
 
 **Why the trouble of creating a Python package?** We could just share the used scripts. However, our scripts are built on top of other Python packages that change with time. Actually, we evolve as well. For instance, to extend from the 2017 to the 2020 edition we had to adapt to changes in the data sources as well as we improved some steps on our procedures.
-By providing a formal Package, we can specify the required dependencies and make it easier for anyone to reproduce our results, as well as re-use our resources and extend for other purposes.
+By providing a formal Package, we can specify the required dependencies and make it easier for anyone to reproduce our results, as well as reuse our resources and extend for other purposes.
 Also, by tagging the versions of the package, we can keep track of the changes and be able to reproduce the results at any time.
 
 The first step to recreate FIED is to install the `fied` package as follows.
@@ -49,7 +49,7 @@ In a terminal, you can run
    fied
    ```
 
-and in Python import it and re-use as a regular package
+and in Python import it and reuse as a regular package
 
    ```python
    import fied
