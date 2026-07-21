@@ -86,7 +86,7 @@ The USDA collects a limited amount of energy consumption data for farming operat
 The USDA also maintains the `Federal Life Cycle Assessment (LCA) Commons <https://www.lcacommons.gov>`_, a data repository to support LCA.
 
 
-Other Publicly-Avaialable Data
+Other Publicly-Available Data
 ******************************
 
 * `U.S. industrial boiler inventory <https://github.com/carriescho/Electrification-of-Boilers>`_: Based on 2022 work from `Schoeneberger et al. <https://doi.org/10.1016/j.adapen.2022.100089>`_. 
