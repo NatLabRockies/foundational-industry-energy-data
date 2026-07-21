@@ -39,7 +39,7 @@ jobs:
       - name: Build HTML docs
         run: |
           pixi reinstall -e doc fied
-          pixi run -e doc python-docs  # treats warnings as errors
+          pixi run -e doc build-doc
 
       - name: Setup Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
