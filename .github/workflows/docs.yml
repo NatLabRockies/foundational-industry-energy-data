@@ -108,8 +108,8 @@ jobs:
 
       - name: Build PDF docs
         run: |
-          cd docs
-          make latexpdf
+          pixi reinstall -e doc fied
+          pixi run -e doc build-pdf
 
       - name: Upload PDF artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
