@@ -40,7 +40,7 @@ exclude_patterns = [
     "**/.ipynb_checkpoints/",
     "**/__pycache__/**",
     "**/includes/**",
-    "**/_build/**",
+    "**/build/**",
     "**/.DS_Store/**",
 ]
 
