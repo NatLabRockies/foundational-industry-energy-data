@@ -37,16 +37,18 @@ def expect_polars(func):
     polars. Therefore, it allows new functions based on polars to
     operate in a legacy codebase that still uses pandas.
 
-    Example
-    -------
-    @expect_polars
-    def echo(df: pl.LazyFrame) -> pl.LazyFrame:
-        return df
-
-    echo(pd.DataFrame({"a": [1, 2, 3]}))
-
-    Therefore, `echo` expects a polars DataFrame, but can be
+    Therefore, ``echo`` expects a polars DataFrame, but can be
     called with a pandas DataFrame.
+
+    Examples
+    --------
+    .. code-block:: python
+
+        @expect_polars
+        def echo(df: pl.LazyFrame) -> pl.LazyFrame:
+            return df
+
+        echo(pd.DataFrame({"a": [1, 2, 3]}))
     """
 
     @functools.wraps(func)
@@ -71,16 +73,18 @@ def expect_pandas(func):
     pandas. Therefore, it allows legacy functions based on pandas to
     operate in a codebase that is transitioning to polars.
 
-    Example
-    -------
-    @expect_pandas
-    def echo(df: pd.DataFrame) -> pd.DataFrame:
-        return df
-
-    echo(pl.DataFrame({"a": [1, 2, 3]}))
-
-    Therefore, `echo` expects a pandas DataFrame, but can be
+    Therefore, ``echo`` expects a pandas DataFrame, but can be
     called with a polars DataFrame.
+
+    Examples
+    --------
+    .. code-block:: python
+
+        @expect_pandas
+        def echo(df: pd.DataFrame) -> pd.DataFrame:
+            return df
+
+        echo(pl.DataFrame({"a": [1, 2, 3]}))
     """
 
     @functools.wraps(func)

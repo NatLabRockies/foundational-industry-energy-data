@@ -51,6 +51,33 @@ exclude_patterns = [
 html_theme = 'press'
 html_static_path = ['_static']
 
+# -- Options for LaTeX / PDF output ------------------------------------------
+# Use XeLaTeX with an explicit fontspec-based font setup. This avoids the
+# default pdflatex font stack (cmap / CM-Super / T1 encodings), which pulls
+# in optional TeX Live packages that are not always installed and have been
+# breaking the PDF build. DejaVu ships in texlive-fonts-recommended, which
+# is already installed in the CI environment.
+latex_engine = "xelatex"
+latex_elements = {
+    "papersize": "letterpaper",
+    "pointsize": "11pt",
+    # Replace Sphinx's default font package block with an explicit
+    # fontspec configuration so we do not depend on cmap/fontenc/CM-Super.
+    "fontpkg": r"""
+\usepackage{fontspec}
+\setmainfont{DejaVu Serif}
+\setsansfont{DejaVu Sans}
+\setmonofont{DejaVu Sans Mono}
+""",
+    # Skip Sphinx's cmap package inclusion (pdflatex-only, not needed with
+    # XeLaTeX and its Unicode-native font handling).
+    "cmappkg": "",
+    # fontenc is unnecessary under XeLaTeX; fontspec handles encoding.
+    "fontenc": "",
+    # inputenc is a no-op under XeLaTeX (input is already Unicode).
+    "inputenc": "",
+}
+
 # -- Extension configuration -------------------------------------------------
 
 # -- Autodoc & Autosummary configuration --
