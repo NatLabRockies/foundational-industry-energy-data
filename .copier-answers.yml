@@ -1,0 +1,18 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: v0.0.17
+_src_path: https://github.com/NatLabRockies/pypackage-template
+author_family_name: McMillan
+author_first_name: McMillan
+command_line_interface: click
+email: gpimenta@nlr.gov
+github_username: castelao
+include_checklist: true
+orcid: ''
+package_short_description: The Foundational Industry Energy Dataset (FIED) is a unit-level characterization of energy use in the U.S. industrial sector
+project_license: BSD-3-Clause
+project_name: foundational-industry-energy-data
+project_slug: fied
+project_title: The Foundational Industry Energy Dataset (FIED)
+repository: https://github.com/NatLabRockies/foundational-industry-energy-data
+requires_python: '3.9'
+use_pre_commit: true
