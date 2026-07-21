@@ -86,15 +86,6 @@ The USDA collects a limited amount of energy consumption data for farming operat
 The USDA also maintains the `Federal Life Cycle Assessment (LCA) Commons <https://www.lcacommons.gov>`_, a data repository to support LCA.
 
 
-Other Publicly-Available Data
-******************************
-
-* `U.S. industrial boiler inventory <https://github.com/carriescho/Electrification-of-Boilers>`_: Based on 2022 work from `Schoeneberger et al. <https://doi.org/10.1016/j.adapen.2022.100089>`_. 
-* `Global Steel Plant Tracker (GSPT) <https://globalenergymonitor.org/projects/global-steel-plant-tracker/>`_: Data compiled by `Global Energy Monitor`_ on global steel facilities.  
-* `Global Blast Furnace Tracker (GBFT) <https://globalenergymonitor.org/projects/global-blast-furnace-tracker/>`_: Data compiled by `Global Energy Monitor`_ on global blast furnaces.
-* `Global Cement and Concrete Tracker <https://globalenergymonitor.org/projects/global-cement-and-concrete-tracker/>`_: Scheduled release in July 2025 by `Global Energy Monitor`_. 
-
-
 Private (Proprietary) Sources
 *****************************
 
