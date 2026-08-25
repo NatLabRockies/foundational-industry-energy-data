@@ -1,29 +1,28 @@
 version: 2
 updates:
+
   # Security updates only.
   - package-ecosystem: pip
     directory: "/"
     schedule:
       interval: daily
+    allow:
+      - dependency-type: "direct"
     open-pull-requests-limit: 0
+    labels:
+      - "chore"
+      - "dependencies"
+      - "security"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: weekly
       day: tuesday
-    open-pull-requests-limit: 10
-    labels:
-      - "chore"
-      - "dependencies"
-      - "github_actions"
     cooldown:
       default-days: 7
       semver-major-days: 14
-      semver-minor-days: 7
-      semver-patch-days: 3
-      include:
-        - "*"
+    open-pull-requests-limit: 10
     groups:
       github-actions-minor-patch:
         patterns:
@@ -36,3 +35,9 @@ updates:
           - "*"
         update-types:
           - "major"
+    commit-message:
+      prefix: "ci"
+    labels:
+      - "chore"
+      - "dependencies"
+      - "github_actions"
