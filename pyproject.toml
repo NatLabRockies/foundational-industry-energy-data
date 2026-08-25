@@ -133,7 +133,9 @@ sphinxcontrib-bibtex = ">=2.6.5,<3"
 codespell = ">=2.3,<3"
 
 [tool.pixi.feature.test.dependencies]
-pytest = "~=7.4.0"
+pytest = ">=8.4.1,<9"
+pytest-cov = ">=6.2.1,<7"
+pytest-xdist = ">=3.8.0,<4"
 
 [tool.ruff]
 line-length = 79
