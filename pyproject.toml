@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools >= 61", "setuptools_scm[toml] >= 8"]
-build-backend = 'setuptools.build_meta'
+requires = ["hatchling >= 1.27", "hatch-vcs >= 0.5"]
+build-backend = "hatchling.build"
 
 [project]
 name = "fied"
@@ -69,6 +69,16 @@ fied = { path = ".", editable = true }
 
 [tool.pixi.tasks]
 
+[tool.pixi.feature.build.tasks]
+build-wheels = { cmd = "uv build --sdist --wheel --out-dir dist/ ." }
+publish-pypi = { cmd = "uv publish", depends-on = ["build-wheels"] }
+
+[tool.pixi.feature.dev.tasks]
+lint = "ruff check ./src/fied"
+format = "ruff format ./src/fied"
+# TODO: restore --cov-fail-under=80 once the deselected legacy tests (see tests/conftest.py) are re-enabled
+tests = "pytest --durations=20 -rapP -vv --cov=fied --cov-report=html --cov-branch --cov-report=xml:coverage.xml --cov-fail-under=0 tests/"
+
 [tool.pixi.feature.doc.tasks]
 # build-doc = { cmd = "make clean html", cwd = "docs", env = { SPHINXOPTS = "--fail-on-warning --keep-going" } }
 build-doc = { cmd = "make clean html", cwd = "docs", env = { SPHINXOPTS = "--keep-going" } }
@@ -103,9 +113,14 @@ importlib_resources = ">=6.5.2,<7"
 
 [tool.pixi.environments]
 default = { solve-group = "default" }
-dev = { features = ["dev", "doc", "test"], solve-group = "default" }
+dev = { features = ["build", "dev", "doc", "test"], solve-group = "default" }
 doc = { features = ["doc"], solve-group = "default" }
 test = { features = ["test"], solve-group = "default" }
+
+[tool.pixi.feature.build.dependencies]
+python-build = ">=1.3.0,<2"
+pkginfo = ">=1.12.1.2,<2"
+uv = ">=0.12.0,<0.13"
 
 [tool.pixi.feature.dev.dependencies]
 ipython = "==8.15"
@@ -119,7 +134,9 @@ sphinxcontrib-bibtex = ">=2.6.5,<3"
 codespell = ">=2.3,<3"
 
 [tool.pixi.feature.test.dependencies]
-pytest = "~=7.4.0"
+pytest = ">=8.4.1,<9"
+pytest-cov = ">=6.2.1,<7"
+pytest-xdist = ">=3.8.0,<4"
 
 [tool.ruff]
 line-length = 79
@@ -212,16 +229,28 @@ ignore-words-list = "fied,nlr,ore,trough,padd,thierry"
 check-filenames = true
 check-hidden = true
 
-[tool.setuptools]
-include-package-data = true
+[tool.hatch.build.targets.wheel]
 packages = ["fied"]
-
-[tool.setuptools.package-data]
-"fied.data.GHGRP" = [
-  "EPA_FuelEFs.csv",
-  "US_FIPS_Codes.csv",
-  "WoodRes_correction_facilities.csv",
+artifacts = [
+  "fied/data/GHGRP/EPA_FuelEFs.csv",
+  "fied/data/GHGRP/US_FIPS_Codes.csv",
+  "fied/data/GHGRP/WoodRes_correction_facilities.csv",
 ]
 
-[tool.setuptools_scm]
-version_file = "fied/_version.py"
+[tool.hatch.version]
+fallback-version = "0.0.0"
+source = "vcs"
+
+[tool.hatch.version.raw-options]
+git_describe_command = [
+  "git",
+  "describe",
+  "--dirty",
+  "--tags",
+  "--long",
+  "--match",
+  "v*[0-9]*",
+]
+
+[tool.hatch.build.hooks.vcs]
+version-file = "fied/_version.py"

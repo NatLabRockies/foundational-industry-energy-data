@@ -2,7 +2,7 @@
 import pytest
 import logging
 import pandas as pd
-from nei.nei_EF_calculations import NEI
+from fied.nei.nei_EF_calculations import NEI
 
 
 def test_find_missing_cap():

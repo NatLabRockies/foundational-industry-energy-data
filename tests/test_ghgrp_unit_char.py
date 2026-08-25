@@ -4,7 +4,7 @@ import logging
 import os
 import pandas as pd
 import numpy as np
-from ghgrp.ghgrp_fac_unit import GHGRP_unit_char
+from fied.ghgrp.ghgrp_fac_unit import GHGRP_unit_char
 
 
 tpath = os.path.join(

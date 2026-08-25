@@ -3,8 +3,8 @@ import pytest
 import logging
 import pandas as pd
 import numpy as np
-from fied_compilation import separate_unit_data
-from ghgrp.ghgrp_fac_unit import GHGRP_unit_char
+from fied.fied_compilation import separate_unit_data
+from fied.ghgrp.ghgrp_fac_unit import GHGRP_unit_char
 
 
 def import_input_data():
