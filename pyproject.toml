@@ -1,8 +1,5 @@
 [build-system]
-requires = [
-  "hatchling >= 1.27",
-  "hatch-vcs >= 0.5",
-]
+requires = ["hatchling >= 1.27", "hatch-vcs >= 0.5"]
 build-backend = "hatchling.build"
 
 [project]
@@ -215,16 +212,28 @@ ignore-words-list = "fied,nlr,ore,trough,padd,thierry"
 check-filenames = true
 check-hidden = true
 
-[tool.setuptools]
-include-package-data = true
+[tool.hatch.build.targets.wheel]
 packages = ["fied"]
-
-[tool.setuptools.package-data]
-"fied.data.GHGRP" = [
-  "EPA_FuelEFs.csv",
-  "US_FIPS_Codes.csv",
-  "WoodRes_correction_facilities.csv",
+artifacts = [
+  "fied/data/GHGRP/EPA_FuelEFs.csv",
+  "fied/data/GHGRP/US_FIPS_Codes.csv",
+  "fied/data/GHGRP/WoodRes_correction_facilities.csv",
 ]
 
-[tool.setuptools_scm]
-version_file = "fied/_version.py"
+[tool.hatch.version]
+fallback-version = "0.0.0"
+source = "vcs"
+
+[tool.hatch.version.raw-options]
+git_describe_command = [
+  "git",
+  "describe",
+  "--dirty",
+  "--tags",
+  "--long",
+  "--match",
+  "v*[0-9]*",
+]
+
+[tool.hatch.build.hooks.vcs]
+version-file = "fied/_version.py"
