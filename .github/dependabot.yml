@@ -20,8 +20,7 @@ updates:
       interval: weekly
       day: tuesday
     cooldown:
-      default-days: 7
-      semver-major-days: 14
+      default-days: 10
     open-pull-requests-limit: 10
     groups:
       github-actions-minor-patch:
